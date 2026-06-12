@@ -2,6 +2,7 @@
 Mr. God's RimWorld Modding Library
 
 Make Mods the Right Way™
+<sup><sub>(Not really a trademark)</sub></sup>
 
 Welcome to Divine Intervention, an ultra-high-performance, developer-friendly C# framework for RimWorld. Designed to eliminate boilerplate, state-machine spaghetti, and memory leaks. This library provides a foundation of decoupled, performant, and heavily documented core utilities, allowing you to focus on building features rather than fighting the engine.
 
