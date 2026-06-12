@@ -9,7 +9,7 @@
 
 namespace DivineIntervention
 {
-    public class DivineIntervention
+    public class DivineInterventionLib
     {
         // Hello World :)
     }

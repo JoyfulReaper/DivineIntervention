@@ -7,6 +7,8 @@
  * Licensed under the MIT License.
  */
 
+// Type Safe Message Bus Example
+
 //using DivineIntervention.Events;
 //using DivineIntervention.Logging;
 //using HarmonyLib;

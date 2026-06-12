@@ -49,7 +49,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DivineIntervention.cs" />
+    <Compile Include="DivineInterventionLib.cs" />
+    <Compile Include="DivineIntervention\Events\Examples\LooseMessageBus.cs" />
     <Compile Include="DivineIntervention\Events\Examples\MyEconmyMod.cs" />
     <Compile Include="DivineIntervention\Events\MessageBus.cs" />
     <Compile Include="DivineIntervention\Logging\DivneLog.cs" />
@@ -57,6 +58,9 @@
     <Compile Include="DivineIntervention\Patching\DynamicPatchProcessor.cs" />
     <Compile Include="DivineIntervention\Patching\Examples\MiniMapContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DivineIntervention\Events\Contracts\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
