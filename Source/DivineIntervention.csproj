@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DivineIntervention.cs" />
+    <Compile Include="DivineIntervention\Events\Examples\MyEconmyMod.cs" />
     <Compile Include="DivineIntervention\Events\MessageBus.cs" />
     <Compile Include="DivineIntervention\Logging\DivneLog.cs" />
     <Compile Include="DivineIntervention\Logging\Examples\MiniMapPerformanceMod.cs" />
