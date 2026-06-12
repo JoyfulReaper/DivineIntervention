@@ -1,9 +1,9 @@
-﻿/*
-* MiniMapPerformance RimWorld Mod
-* 
-* Copyright (c) 2026 Kyle Givler
-* Licensed under the MIT License.
-*/
+﻿///*
+//* MiniMapPerformance RimWorld Mod
+//* 
+//* Copyright (c) 2026 Kyle Givler
+//* Licensed under the MIT License.
+//*/
 
 //using DivineIntervention.Logging;
 //using ForgeCore.Patching; // Assumes your shared library namespace location
@@ -71,7 +71,7 @@
 //            );
 
 //            _isDubsAvailable = true;
-//            DevineLog.Debug("Generic DubsPatchController abstraction engine successfully initialized.");
+//            DivineLog.Debug("Generic DubsPatchController abstraction engine successfully initialized.");
 //        }
 
 //        /// <summary>
@@ -80,7 +80,7 @@
 //        public static void OnGameLoaded()
 //        {
 //            _justLoaded = true;
-//            DevineLog.Debug("Game load state flagged.");
+//            DivineLog.Debug("Game load state flagged.");
 //        }
 
 //        /// <summary>
@@ -116,6 +116,7 @@
 //        /// </summary>
 //        private static bool IsMiniMapOpen()
 //        {
+//            // Note you need to have a reference to the assembly you are targining in your mode project!!
 //            return DubsMintMinimap.DubsMintMinimapMod.Settings.MinimapOpen &&
 //                   Find.CurrentMap != null;
 //        }
