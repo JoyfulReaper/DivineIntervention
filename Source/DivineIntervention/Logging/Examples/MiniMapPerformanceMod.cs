@@ -8,7 +8,7 @@
 */
 
 //using DivineIntervention.Logging;
-//using ForgeCore.Patching;
+//using DivineIntervention.Patching;
 //using HarmonyLib;
 //using Verse;
 

@@ -6,7 +6,7 @@
 //*/
 
 //using DivineIntervention.Logging;
-//using ForgeCore.Patching; // Assumes your shared library namespace location
+//using DivineIntervention.Patching; // Assumes your shared library namespace location
 //using HarmonyLib;
 //using Verse;
 

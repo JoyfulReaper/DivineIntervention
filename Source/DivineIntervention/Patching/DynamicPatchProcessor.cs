@@ -11,7 +11,7 @@ using HarmonyLib;
 using System;
 using System.Reflection;
 
-namespace ForgeCore.Patching
+namespace DivineIntervention.Patching
 {
     /// <summary>
     /// Specifies the execution mutation mutation instructions dispatched by the patching engine.
