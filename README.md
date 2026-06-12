@@ -8,6 +8,7 @@
 
 Coming "soon" to the Steam Workshop. Any current versions posted on the workshop are unoffical builds.
 
+**PLEASE NOTE: This framework is currently in an early and untested state**
 
 ---
 
