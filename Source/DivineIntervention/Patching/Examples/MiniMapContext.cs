@@ -10,7 +10,6 @@
 //using HarmonyLib;
 //using Verse;
 
-//namespace MiniMapPerformance
 //{
 //    /// <summary>
 //    /// Environmental game state data packet required by the generic 
