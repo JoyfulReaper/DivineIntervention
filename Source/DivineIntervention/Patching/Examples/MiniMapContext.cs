@@ -6,11 +6,10 @@
 //*/
 
 //using DivineIntervention.Logging;
-//using ForgeCore.Patching; // Assumes your shared library namespace location
+//using DivineIntervention.Patching; // Assumes your shared library namespace location
 //using HarmonyLib;
 //using Verse;
 
-//namespace MiniMapPerformance
 //{
 //    /// <summary>
 //    /// Environmental game state data packet required by the generic 
