@@ -5,6 +5,10 @@
 *Make Mods the Right Way™*
 (Not really a trademark)
 
+
+Coming "soon" to the Steam Workshop. Any current versions posted on the workshop are unoffical builds.
+
+
 ---
 
 Welcome to **Divine Intervention**, an ultra-high-performance, developer-friendly C# framework for RimWorld. Designed to eliminate boilerplate, state-machine spaghetti, and memory leaks. This library provides a foundation of decoupled, performant, and heavily documented core utilities, allowing you to focus on building features rather than fighting the engine.
@@ -35,18 +39,24 @@ DivineLog.Error("Critical failure in the patching engine!");
 
 Decouple your mod components using a high-performance publish-subscribe pattern. By packaging this as a shared "Core" dependency, your mods can communicate across different assemblies (DLLs) using the same memory space.
 
-* **Inter-Assembly Communication:** Because your mods reference the same `DivineIntervention.dll` (Core Mod), the `MessageBus` acts as a shared backbone for your entire suite of mods.
-* **Hot Path Optimization:** The `MessageBus` separates the "Cold Path" (subscribing) from the "Hot Path" (publishing).
-* **GC-Safe:** Broadcasting messages creates **zero** memory allocations, ensuring you never trigger garbage collection stutters during intense tick loops.
+* **Typed Lane (High-Performance):** Compile-time safe, zero-allocation broadcasting for frequently triggered game events.
+* **Loose Lane (Dynamic):** String-based event routing for cross-mod communication without needing shared type contracts.
+* **Safety First:** Both lanes feature robust exception handling with detailed diagnostic logging (including payload hash codes and subscriber context) to prevent one rogue subscriber from crashing the game.
+* **Mutation-Safe:** The bus utilizes a reverse-iteration pattern, allowing subscribers to safely `Unsubscribe` from within their own callback logic.
 
 ```csharp
-// Subscribe (Cold Path - do this on initialization)
+// --- Typed Lane (Best for performance) ---
 MessageBus.Subscribe<TradeMessage>(msg => {
     DivineLog.Info($"Trade completed for {msg.SilverNet} silver!");
 });
-
-// Publish (Hot Path - zero memory allocation)
 MessageBus.Publish(new TradeMessage { SilverNet = 500 });
+
+// --- Loose Lane (Best for dynamic/cross-mod events) ---
+MessageBus.Subscribe("ModA_InventoryChanged", (data) => {
+    int count = (int)data; // Cast required
+    DivineLog.Info($"Received inventory update: {count}");
+});
+MessageBus.Publish("ModA_InventoryChanged", 1500);
 
 ```
 
@@ -83,11 +93,12 @@ To enable cross-assembly communication (like using the `MessageBus` across diffe
 
 Follow these four steps:
 
-1. **Subscribe:** Ensure your mod depends on the **Divine Intervention Core** mod via the Steam Workshop.
+1. **Subscribe:** Ensure your mod depends on the **Divine Intervention Core** (Name not finalzied) mod via the Steam Workshop (No offical Workshop page yet).
 2. **Reference:** Add a reference to `DivineIntervention.dll` in your project. You will find this DLL inside your local Steam Workshop content folder for the Core mod.
 3. **Set Copy Local to False:** In your project's reference properties, set **Copy Local** to `False`. This is critical—it ensures your mod uses the Core mod's shared instance in memory rather than creating a private (and broken) duplicate.
 4. **Add Dependency:** Update your `About.xml` to include the library as a dependency to ensure it loads before your mod:
 
+Note: packageId not yet finalized.
 ```xml
 <modDependencies>
     <li>
