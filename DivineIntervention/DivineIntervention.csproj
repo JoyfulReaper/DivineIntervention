@@ -52,7 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DivineInterventionLib.cs" />
+<Compile Include="DivineInterventionLib.cs" />
     <Compile Include="DivineIntervention\Examples\LooseMessageBusExample.cs" />
     <Compile Include="DivineIntervention\Examples\TypedMessageBusExample.cs" />
     <Compile Include="DivineIntervention\Events\MessageBus.cs" />
