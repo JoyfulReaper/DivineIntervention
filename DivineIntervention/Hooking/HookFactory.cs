@@ -78,7 +78,16 @@ public static class HookFactory
     /// <returns>An <see cref="IHook"/> handle that can be used to unpatch.</returns>
     public static IHook Create<T>(string methodName, HookPrefix<T> onPrefix = null, HookPostfix<T> onPostfix = null, Func<bool> condition = null)
     {
-        var targetMethod = typeof(T).GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+        MethodInfo targetMethod;
+        try
+        {
+            targetMethod = typeof(T).GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+        }
+        catch (AmbiguousMatchException)
+        {
+            DivineLog.Error($"[HookFactory] Multiple overloads found for method '{methodName}' on type '{typeof(T).Name}'. Overload resolution via parameter types is required.");
+            return null;
+        }
 
         if (targetMethod == null)
         {
@@ -109,7 +118,16 @@ public static class HookFactory
     /// </summary>
     public static IHook Create(Type targetType, string methodName, HookPrefix<object> onPrefix = null, HookPostfix<object> onPostfix = null, Func<bool> condition = null)
     {
-        var targetMethod = targetType.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+        MethodInfo targetMethod;
+        try
+        {
+            targetMethod = targetType.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+        }
+        catch (AmbiguousMatchException)
+        {
+            DivineLog.Error($"[HookFactory] Multiple overloads found for method '{methodName}' on type '{targetType.Name}'. Overload resolution via parameter types is required.");
+            return null;
+        }
 
         if (targetMethod == null)
         {

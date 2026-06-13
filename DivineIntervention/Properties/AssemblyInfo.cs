@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -31,3 +30,6 @@ using System.Runtime.InteropServices;
 //
 [assembly: AssemblyVersion("0.0.0.1")]
 [assembly: AssemblyFileVersion("0.0.0.1")]
+
+// Grant the unit testing project access to internal classes like HookDispatcher
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DivineIntervention.Tests")]

@@ -9,8 +9,10 @@
 
 
 using DivineIntervention.Hooking;
+using DivineIntervention.Hooking.Internal;
 using DivineIntervention.Logging;
 using NUnit.Framework;
+using System.Reflection;
 
 namespace DivineIntervention.Tests;
 
@@ -18,6 +20,17 @@ namespace DivineIntervention.Tests;
 [TestFixture]
 public class HookFactoryTests
 {
+    public static class MockStaticTarget
+    {
+        public static void StaticMethod() { }
+    }
+
+    public class MockOverloadedTarget
+    {
+        public void Execute() { }
+        public void Execute(int value) { }
+    }
+
     [SetUp]
     public void Setup()
     {
@@ -52,6 +65,24 @@ public class HookFactoryTests
     }
 
     [Test]
+    public void Create_SubsequentCalls_DoesNotRePatchHarmonyEngine()
+    {
+        var mockEngine = (MockHarmonyEngine)HookFactory.HarmonyEngine;
+        mockEngine.ClearTracking();
+
+        // Act - Register first hook
+        HookFactory.Create<MockTarget>(nameof(MockTarget.TargetMethod), (instance) => { });
+        int patchesAfterFirstCall = mockEngine.PatchCallCount;
+
+        // Act - Register second hook on same method
+        HookFactory.Create<MockTarget>(nameof(MockTarget.TargetMethod), (instance) => { });
+
+        // Assert
+        Assert.AreEqual(patchesAfterFirstCall, mockEngine.PatchCallCount,
+            "HarmonyEngine.Patch should not be called again for an already patched method.");
+    }
+
+    [Test]
     public void Create_InvalidMethod_ReturnsNullAndLogsError()
     {
         // Act
@@ -59,5 +90,53 @@ public class HookFactoryTests
 
         // Assert
         Assert.IsNull(hook, "Factory should return null for invalid methods.");
+    }
+
+    [Test]
+    public void Create_StaticTypeOverload_SuccessfullyRegistersHook()
+    {
+        // Act
+        IHook hook = HookFactory.Create(
+            typeof(MockStaticTarget),
+            nameof(MockStaticTarget.StaticMethod),
+            onPrefix: (instance, args) => true
+        );
+
+        // Assert
+        Assert.IsNotNull(hook, "Hook for static method should not be null.");
+    }
+
+    [Test]
+    public void DispatcherEmptyEvent_TriggersHarmonyUnpatch()
+    {
+        var mockEngine = (MockHarmonyEngine)HookFactory.HarmonyEngine;
+        mockEngine.ClearTracking();
+
+        var targetMethod = typeof(MockTarget).GetMethod(nameof(MockTarget.TargetMethod));
+
+        // Arrange - Register a hook so the framework is actively tracking the target method
+        IHook hook = HookFactory.Create<MockTarget>(nameof(MockTarget.TargetMethod), (instance) => { });
+
+        // Act - Force the cleanup event to fire using reflection assignment
+        var onMethodEmptyDelegate = typeof(HookDispatcher)
+            .GetField("OnMethodEmpty", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)
+            ?.GetValue(null) as System.Action<MethodBase>;
+
+        onMethodEmptyDelegate?.Invoke(targetMethod);
+
+        // Assert
+        Assert.IsTrue(mockEngine.WasUnpatchCalledFor(targetMethod),
+            "HarmonyEngine.Unpatch should be called automatically when a method's hook queue becomes empty.");
+    }
+
+    [Test]
+    public void Create_AmbiguousOverload_HandlesExceptionGracefully()
+    {
+        // Act & Assert
+        // This will let you observe if GetMethod throws an unhandled AmbiguousMatchException
+        Assert.DoesNotThrow(() =>
+        {
+            HookFactory.Create<MockOverloadedTarget>(nameof(MockOverloadedTarget.Execute), (instance) => { });
+        });
     }
 }

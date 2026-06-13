@@ -61,6 +61,7 @@
     <Compile Include="Hooking\Internal\HamonyEngine.cs" />
     <Compile Include="Logging\DivineLog.cs" />
     <Compile Include="Examples\LoggingExamples.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="State\DynamicPatchProcessor.cs" />
     <Compile Include="Examples\AdvancedStatePatchExample.cs" />
     <Compile Include="Examples\HookExamples.cs" />
@@ -70,7 +71,6 @@
     <Compile Include="Hooking\Internal\HookDispatcher.cs" />
     <Compile Include="Hooking\HookFactory.cs" />
     <Compile Include="Hooking\IHook.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utilities\" />
