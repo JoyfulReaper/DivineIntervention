@@ -10,7 +10,8 @@
 
 Welcome to **Divine Intervention**, an ultra-high-performance, developer-friendly C# framework for RimWorld. Designed to eliminate boilerplate, state-machine spaghetti, and memory leaks. This library provides a foundation of decoupled, performant, and heavily documented core utilities, allowing you to focus on building features rather than fighting the engine (and the urge to harvest your pawns' organs). 
 
-The core framework code is highly commented for much faster understand and we also provide complete examples in the Examples folder.
+* The core framework code is heavily commented for much faster understanding.
+* Extensive, fully compiling example usage for all features can be found in the Examples folder.
 
 ---
 
