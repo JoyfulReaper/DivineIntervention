@@ -52,28 +52,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-<Compile Include="DivineInterventionLib.cs" />
-    <Compile Include="DivineIntervention\Examples\LooseMessageBusExample.cs" />
-    <Compile Include="DivineIntervention\Examples\TypedMessageBusExample.cs" />
-    <Compile Include="DivineIntervention\Events\MessageBus.cs" />
-    <Compile Include="DivineIntervention\Hooking\HookAbstractions.cs" />
-    <Compile Include="DivineIntervention\Hooking\IHarmonyEngine.cs" />
-    <Compile Include="DivineIntervention\Hooking\Internal\HamonyEngine.cs" />
-    <Compile Include="DivineIntervention\Logging\DivineLog.cs" />
-    <Compile Include="DivineIntervention\Examples\LoggingExamples.cs" />
-    <Compile Include="DivineIntervention\State\DynamicPatchProcessor.cs" />
-    <Compile Include="DivineIntervention\Examples\AdvancedStatePatchExample.cs" />
-    <Compile Include="DivineIntervention\Examples\HookExamples.cs" />
-    <Compile Include="DivineIntervention\Examples\MyModManager.cs" />
-    <Compile Include="DivineIntervention\Hooking\Internal\GenericHook.cs" />
-    <Compile Include="DivineIntervention\Hooking\Internal\HookDelegates.cs" />
-    <Compile Include="DivineIntervention\Hooking\Internal\HookDispatcher.cs" />
-    <Compile Include="DivineIntervention\Hooking\HookFactory.cs" />
-    <Compile Include="DivineIntervention\Hooking\IHook.cs" />
+    <Compile Include="DivineInterventionLib.cs" />
+    <Compile Include="Examples\LooseMessageBusExample.cs" />
+    <Compile Include="Examples\TypedMessageBusExample.cs" />
+    <Compile Include="Events\MessageBus.cs" />
+    <Compile Include="Hooking\HookAbstractions.cs" />
+    <Compile Include="Hooking\IHarmonyEngine.cs" />
+    <Compile Include="Hooking\Internal\HamonyEngine.cs" />
+    <Compile Include="Logging\DivineLog.cs" />
+    <Compile Include="Examples\LoggingExamples.cs" />
+    <Compile Include="State\DynamicPatchProcessor.cs" />
+    <Compile Include="Examples\AdvancedStatePatchExample.cs" />
+    <Compile Include="Examples\HookExamples.cs" />
+    <Compile Include="Examples\MyModManager.cs" />
+    <Compile Include="Hooking\Internal\GenericHook.cs" />
+    <Compile Include="Hooking\Internal\HookDelegates.cs" />
+    <Compile Include="Hooking\Internal\HookDispatcher.cs" />
+    <Compile Include="Hooking\HookFactory.cs" />
+    <Compile Include="Hooking\IHook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DivineIntervention\Utilities\" />
+    <Folder Include="Utilities\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
