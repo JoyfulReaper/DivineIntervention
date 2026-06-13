@@ -48,7 +48,7 @@ public class HookFactoryTests
 
         // If the factory logic is correct, the HookDispatcher 
         // should have registered this hook for the method.
-        // (You may need to expose a way to check registration in your Dispatcher)
+        // (TODO: need to expose a way to check registration in Dispatcher)
     }
 
     [Test]
