@@ -4,6 +4,7 @@
 * * Copyright (c) 2026 Kyle Givler
 * Licensed under the MIT License.
 */
+using DivineIntervention.Logging;
 using System;
 using System.Reflection;
 
@@ -11,6 +12,7 @@ namespace DivineIntervention.Patching
 {
     /// <summary>
     /// A concrete implementation of <see cref="IHook"/> that handles type-safe casting and static method resolution.
+    /// Includes robust exception handling to prevent mod-level crashes from halting the game loop.
     /// </summary>
     /// <typeparam name="T">The type that declares the method being patched.</typeparam>
     public class GenericHook<T> : IHook
@@ -41,17 +43,23 @@ namespace DivineIntervention.Patching
             if (_condition != null && !_condition())
                 return true;
 
-            // Handle static methods (instance is null) or successful casts
-            if (instance == null)
+            try
             {
-                return _onPrefix?.Invoke(default, args) ?? true;
+                if (instance == null)
+                {
+                    return _onPrefix?.Invoke(default, args) ?? true;
+                }
+                else if (instance is T typedInstance)
+                {
+                    return _onPrefix?.Invoke(typedInstance, args) ?? true;
+                }
             }
-            else if (instance is T typedInstance)
+            catch (Exception ex)
             {
-                return _onPrefix?.Invoke(typedInstance, args) ?? true;
+                DivineLog.Error($"[DivineIntervention] Exception in Prefix hook for {_targetMethod.Name}: {ex.Message}\n{ex.StackTrace}");
             }
 
-            return true;
+            return true; // Default to 'true' so the game doesn't hang on a failed hook
         }
 
         /// <inheritdoc />
@@ -59,14 +67,20 @@ namespace DivineIntervention.Patching
         {
             if (_condition != null && !_condition()) return;
 
-            // Handle static methods (instance is null) or successful casts
-            if (instance == null)
+            try
             {
-                _onPostfix?.Invoke(default, args, ref result);
+                if (instance == null)
+                {
+                    _onPostfix?.Invoke(default, args, ref result);
+                }
+                else if (instance is T typedInstance)
+                {
+                    _onPostfix?.Invoke(typedInstance, args, ref result);
+                }
             }
-            else if (instance is T typedInstance)
+            catch (Exception ex)
             {
-                _onPostfix?.Invoke(typedInstance, args, ref result);
+                DivineLog.Error($"[DivineIntervention] Exception in Postfix hook for {_targetMethod.Name}: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
