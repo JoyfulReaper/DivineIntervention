@@ -7,7 +7,7 @@
 * Licensed under the MIT License.
 */
 
-namespace DivineIntervention.Patching
+namespace DivineIntervention.Hooking
 {
     /// <summary>
     /// Represents a dynamic, unpatchable hook that intercepts game methods.

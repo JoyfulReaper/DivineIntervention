@@ -34,19 +34,18 @@
 
 using DivineIntervention.Logging;
 
-namespace DivineIntervention
-{
-    /// <summary>
-    /// The primary entry point for the Divine Intervention Framework.
-    /// Provides global access to the framework's capabilities.
-    /// </summary>
-    public static class DivineInterventionLib
-    {
-        public const string VERSION = "0.0.1";
+namespace DivineIntervention;
 
-        public static void Initialize()
-        {
-            DivineLog.Info($"Framework Initialized Version {VERSION}");
-        }
+/// <summary>
+/// The primary entry point for the Divine Intervention Framework.
+/// Provides global access to the framework's capabilities.
+/// </summary>
+public static class DivineInterventionLib
+{
+    public const string VERSION = "0.0.1";
+
+    public static void Initialize()
+    {
+        DivineLog.Info($"Framework Initialized Version {VERSION}");
     }
 }

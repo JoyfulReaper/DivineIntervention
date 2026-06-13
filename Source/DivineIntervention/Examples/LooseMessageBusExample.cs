@@ -9,8 +9,8 @@
 
 #if DEBUG
 using DivineIntervention.Events;
+using DivineIntervention.Hooking;
 using DivineIntervention.Logging;
-using DivineIntervention.Patching;
 using RimWorld.Planet;
 using System;
 

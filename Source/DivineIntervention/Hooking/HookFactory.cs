@@ -12,7 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace DivineIntervention.Patching
+namespace DivineIntervention.Hooking
 {
     /// <summary>
     /// Primary API entry point for creating and managing dynamic method hooks.

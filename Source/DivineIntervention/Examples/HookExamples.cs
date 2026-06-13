@@ -6,8 +6,9 @@
 */
 
 #if DEBUG
+using DivineIntervention.Hooking;
 using DivineIntervention.Logging;
-using DivineIntervention.Patching;
+using RimWorld.Planet;
 using Verse;
 
 namespace DivineIntervention.Examples
@@ -120,8 +121,24 @@ namespace DivineIntervention.Examples
                 }
             );
         }
+        /// <summary>
+        /// PATTERN 7: Explicit Type Overloads
+        /// Best for: Targeting static classes, internal methods, or third-party code where generic constraints don't fit.
+        /// </summary>
+        public static void RunExplicitTypeOverLoads()
+        {
+            IHook staticHook = HookFactory.Create(
+                typeof(FactionGiftUtility),
+                "GiveGiftResult",
+                onPrefix: null,
+                onPostfix: (object instance, object[] args, ref object result) =>
+                {
+                    // Custom static patch logic goes here
+                }
+            );
+        }
 
-        #endregion
     }
 }
+        #endregion
 #endif

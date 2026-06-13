@@ -56,10 +56,10 @@
     <Compile Include="DivineIntervention\Examples\LooseMessageBusExample.cs" />
     <Compile Include="DivineIntervention\Examples\TypedMessageBusExample.cs" />
     <Compile Include="DivineIntervention\Events\MessageBus.cs" />
-    <Compile Include="DivineIntervention\Logging\DivneLog.cs" />
+    <Compile Include="DivineIntervention\Logging\DivineLog.cs" />
     <Compile Include="DivineIntervention\Examples\LoggingExamples.cs" />
     <Compile Include="DivineIntervention\State\DynamicPatchProcessor.cs" />
-    <Compile Include="DivineIntervention\State\Examples\AdvancedStatePatchExample.cs" />
+    <Compile Include="DivineIntervention\Examples\AdvancedStatePatchExample.cs" />
     <Compile Include="DivineIntervention\Examples\HookExamples.cs" />
     <Compile Include="DivineIntervention\Examples\MyModManager.cs" />
     <Compile Include="DivineIntervention\Hooking\Internal\GenericHook.cs" />
@@ -70,7 +70,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DivineIntervention\Patching\" />
     <Folder Include="DivineIntervention\Utilities\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

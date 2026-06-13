@@ -8,8 +8,8 @@
 */
 
 #if DEBUG
+using DivineIntervention.Hooking;
 using DivineIntervention.Logging;
-using DivineIntervention.Patching;
 using Verse;
 
 namespace DivineIntervention.Examples
