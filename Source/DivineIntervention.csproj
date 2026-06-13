@@ -63,6 +63,7 @@
     <Compile Include="DivineIntervention\Patching\Examples\MyModManager.cs" />
     <Compile Include="DivineIntervention\Patching\Examples\DivineInterventionExamples.cs" />
     <Compile Include="DivineIntervention\Patching\GenericHook.cs" />
+    <Compile Include="DivineIntervention\Patching\HookDelegates.cs" />
     <Compile Include="DivineIntervention\Patching\HookDispatcher.cs" />
     <Compile Include="DivineIntervention\Patching\HookFactory.cs" />
     <Compile Include="DivineIntervention\Patching\IHook.cs" />

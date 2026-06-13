@@ -1,58 +1,76 @@
-﻿using DivineIntervention.Patching;
+﻿/*
+* Divine Intervention RimWorld Modding Framework
+* * Make Mods the Right Way(tm)
+* * Copyright (c) 2026 Kyle Givler
+* Licensed under the MIT License.
+*/
 using System;
 using System.Reflection;
 
-public class GenericHook<T> : IHook
+namespace DivineIntervention.Patching
 {
-    private readonly Func<T, bool> _onPrefix;
-    private readonly Action<T, object> _onPostfix;
-    private readonly Func<bool> _condition;
-    private readonly MethodBase _targetMethod;
-
     /// <summary>
-    /// A concrete implementation of <see cref="IHook"/> that handles type-safe casting.
+    /// A concrete implementation of <see cref="IHook"/> that handles type-safe casting and static method resolution.
     /// </summary>
-    public GenericHook(
-        MethodBase method,
-        Func<T, bool> onPrefix,
-        Action<T, object> onPostfix,
-        Func<bool> condition)
+    /// <typeparam name="T">The type that declares the method being patched.</typeparam>
+    public class GenericHook<T> : IHook
     {
-        _targetMethod = method;
-        _onPrefix = onPrefix;
-        _onPostfix = onPostfix;
-        _condition = condition;
-    }
+        private readonly HookPrefix<T> _onPrefix;
+        private readonly HookPostfix<T> _onPostfix;
+        private readonly Func<bool> _condition;
+        private readonly MethodBase _targetMethod;
 
-    /// <inheritdoc />
-    public bool InvokePrefix(object[] args, object instance)
-    {
-        // If condition fails, we assume "True" (let the original method run)
-        if (_condition != null && !_condition())
-            return true;
-
-        if (instance is T typedInstance)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GenericHook{T}"/> class.
+        /// </summary>
+        /// <param name="method">The method being patched.</param>
+        /// <param name="onPrefix">The prefix delegate to execute.</param>
+        /// <param name="onPostfix">The postfix delegate to execute.</param>
+        /// <param name="condition">An optional condition function. If it evaluates to false, the hook is ignored.</param>
+        public GenericHook(MethodBase method, HookPrefix<T> onPrefix, HookPostfix<T> onPostfix, Func<bool> condition)
         {
-            if (instance is null)
+            _targetMethod = method;
+            _onPrefix = onPrefix;
+            _onPostfix = onPostfix;
+            _condition = condition;
+        }
+
+        /// <inheritdoc />
+        public bool InvokePrefix(object[] args, object instance)
+        {
+            if (_condition != null && !_condition())
                 return true;
 
-            // Execute the logic and return the result
-            return _onPrefix(typedInstance);
+            // Handle static methods (instance is null) or successful casts
+            if (instance == null)
+            {
+                return _onPrefix?.Invoke(default, args) ?? true;
+            }
+            else if (instance is T typedInstance)
+            {
+                return _onPrefix?.Invoke(typedInstance, args) ?? true;
+            }
+
+            return true;
         }
 
-        return true; // Default: let original run
-    }
-
-    public void InvokePostfix(object[] args, ref object result, object instance)
-    {
-        if (_condition != null && !_condition()) return;
-        if (instance is T typedInstance)
+        /// <inheritdoc />
+        public void InvokePostfix(object[] args, ref object result, object instance)
         {
-            _onPostfix?.Invoke(typedInstance, result);
-        }
-    }
+            if (_condition != null && !_condition()) return;
 
-    /// <inheritdoc />
-    public void Unpatch() =>
-        HookDispatcher.Unregister(_targetMethod, this);
+            // Handle static methods (instance is null) or successful casts
+            if (instance == null)
+            {
+                _onPostfix?.Invoke(default, args, ref result);
+            }
+            else if (instance is T typedInstance)
+            {
+                _onPostfix?.Invoke(typedInstance, args, ref result);
+            }
+        }
+
+        /// <inheritdoc />
+        public void Unpatch() => HookDispatcher.Unregister(_targetMethod, this);
+    }
 }
