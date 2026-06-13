@@ -42,9 +42,11 @@ namespace DivineIntervention
     /// </summary>
     public static class DivineInterventionLib
     {
+        public const string VERSION = "0.0.1";
+
         public static void Initialize()
         {
-            DivineLog.Info("Divine Intervention Framework Initialized.");
+            DivineLog.Info($"Framework Initialized Version {VERSION}");
         }
     }
 }
