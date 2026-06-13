@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace DivineIntervention.Hooking;
+namespace DivineIntervention.Hooking.Internal;
 
 /// <summary>
 /// Internal dispatcher that routes Harmony-injected game method calls to registered <see cref="IHook"/> instances.

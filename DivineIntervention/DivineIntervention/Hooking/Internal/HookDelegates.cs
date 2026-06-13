@@ -7,7 +7,7 @@
 *  Licensed under the MIT License.
 */
 
-namespace DivineIntervention.Hooking;
+namespace DivineIntervention.Hooking.Internal;
 
 /// <summary>
 /// Delegate for logic executed before a method runs.

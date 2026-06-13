@@ -21,6 +21,10 @@ namespace DivineIntervention.Logging;
 /// </summary>
 public static class DivineLog
 {
+    // Default execution route uses RimWorld's native logger
+    public static Action<string> ErrorRouter { get; set; } = (message) =>
+        Log.Error(message);
+
     /// <summary>
     /// The prefix for all log messages.
     /// </summary>
@@ -75,23 +79,27 @@ public static class DivineLog
     /// </summary>
     /// <param name="message">The message to log.</param>
     [Conditional("DEBUG")]
-    public static void Debug(string message) => Log.Message($"{FormattedPrefix}: {message}");
+    public static void Debug(string message) =>
+        Log.Message($"{FormattedPrefix}: {message}");
 
     /// <summary>
     /// Log an info message.
     /// </summary>
     /// <param name="message">The message to log.</param>
-    public static void Info(string message) => Log.Message($"{FormattedPrefix}: {message}");
+    public static void Info(string message) =>
+        Log.Message($"{FormattedPrefix}: {message}");
 
     /// <summary>
     /// Log a warning message.
     /// </summary>
     /// <param name="message">The message to log.</param>
-    public static void Warning(string message) => Log.Warning($"[{LoggingPrefix} Warning]: {message}");
+    public static void Warning(string message) =>
+        Log.Warning($"[{LoggingPrefix} Warning]: {message}");
 
     /// <summary>
     /// Log an error message.
     /// </summary>
     /// <param name="message">The message to log.</param>
-    public static void Error(string message) => Log.Error($"[{LoggingPrefix} Error]: {message}");
+    public static void Error(string message) =>
+        ErrorRouter?.Invoke(message);
 }

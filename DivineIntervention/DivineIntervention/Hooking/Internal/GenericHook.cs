@@ -4,11 +4,12 @@
 * * Copyright (c) 2026 Kyle Givler
 * Licensed under the MIT License.
 */
+
 using DivineIntervention.Logging;
 using System;
 using System.Reflection;
 
-namespace DivineIntervention.Hooking;
+namespace DivineIntervention.Hooking.Internal;
 
 /// <summary>
 /// A concrete implementation of <see cref="IHook"/> that handles type-safe casting and static method resolution.
