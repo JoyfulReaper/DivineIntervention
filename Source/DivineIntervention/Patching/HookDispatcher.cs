@@ -37,18 +37,27 @@ namespace DivineIntervention.Patching
             }
         }
 
-        /// <summary>
-        /// Internal bridge method called by Harmony. Do not call directly.
-        /// </summary>
-        public static void PrefixForwarder(MethodBase __originalMethod, object[] __args, object __instance)
+        // Prefix forwarder (Logic to stop/continue)
+        public static bool PrefixForwarder(MethodBase __originalMethod, object[] __args, object __instance)
         {
             if (_registry.TryGetValue(__originalMethod, out var hooks))
             {
-                // Create a copy or use a for-loop to prevent collection modified errors
-                // if a hook unpatches itself while iterating
-                for (int i = hooks.Count - 1; i >= 0; i--)
+                foreach (var hook in hooks)
                 {
-                    hooks[i].InvokePrefix(__args, __instance);
+                    if (!hook.InvokePrefix(__args, __instance)) return false;
+                }
+            }
+            return true;
+        }
+
+        // Postfix forwarder (Logic to observe/modify results)
+        public static void PostfixForwarder(MethodBase __originalMethod, object[] __args, ref object __result, object __instance)
+        {
+            if (_registry.TryGetValue(__originalMethod, out var hooks))
+            {
+                foreach (var hook in hooks)
+                {
+                    hook.InvokePostfix(__args, ref __result, __instance);
                 }
             }
         }

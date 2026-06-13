@@ -19,7 +19,10 @@ namespace DivineIntervention.Patching
         /// </summary>
         /// <param name="args">The arguments passed to the original method.</param>
         /// <param name="instance">The object instance (if non-static).</param>
-        void InvokePrefix(object[] args, object instance);
+        bool InvokePrefix(object[] args, object instance);
+
+        // Postfix: Accepts the result by ref so you can modify it
+        void InvokePostfix(object[] args, ref object result, object instance);
 
         /// <summary>
         /// Removes this hook from the dispatcher registry.

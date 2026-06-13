@@ -23,15 +23,22 @@ namespace DivineIntervention.Patching
         private static readonly Harmony _harmony = new Harmony("com.kgivler.divineIntervention");
         private static readonly HashSet<MethodBase> _patchedMethods = new HashSet<MethodBase>();
 
-        /// <summary>
-        /// Creates a new dynamic hook for a specific method.
-        /// </summary>
-        /// <typeparam name="T">The type containing the method.</typeparam>
-        /// <param name="methodName">The name of the method to hook.</param>
-        /// <param name="onPrefix">The logic to run before the method executes.</param>
-        /// <param name="condition">Optional condition; hook only fires if this returns true.</param>
-        /// <returns>An <see cref="IHook"/> instance which can be used to <see cref="IHook.Unpatch"/> later.</returns>
+        // OBSERVER OVERLOAD: Accepts Action<T>
         public static IHook Create<T>(string methodName, Action<T> onPrefix, Func<bool> condition = null)
+        {
+            // Explicitly map this Action to a Func that returns 'true'
+            return Create<T>(methodName,
+                onPrefix: (instance) =>
+                {
+                    onPrefix(instance);
+                    return true;
+                },
+                onPostfix: null,
+                condition: condition);
+        }
+
+        // INTERCEPTOR OVERLOAD: Accepts Func<T, bool>
+        public static IHook Create<T>(string methodName, Func<T, bool> onPrefix = null, Action<T, object> onPostfix = null, Func<bool> condition = null)
         {
             var targetMethod = AccessTools.Method(typeof(T), methodName);
 
@@ -41,16 +48,16 @@ namespace DivineIntervention.Patching
                 return null;
             }
 
-            var hook = new GenericHook<T>(targetMethod, onPrefix, condition);
-
+            var hook = new GenericHook<T>(targetMethod, onPrefix, onPostfix, condition);
             HookDispatcher.Register(targetMethod, hook);
 
             if (_patchedMethods.Add(targetMethod))
             {
-                // Ensure we only patch the actual game method once
-                _harmony.Patch(targetMethod, prefix: new HarmonyMethod(typeof(HookDispatcher), nameof(HookDispatcher.PrefixForwarder)));
+                _harmony.Patch(targetMethod,
+                    prefix: new HarmonyMethod(typeof(HookDispatcher), nameof(HookDispatcher.PrefixForwarder)),
+                    postfix: new HarmonyMethod(typeof(HookDispatcher), nameof(HookDispatcher.PostfixForwarder))
+                );
             }
-
             return hook;
         }
     }
