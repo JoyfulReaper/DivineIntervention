@@ -2,6 +2,9 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B5CD8ED9-70F3-4103-A280-CDB855352ED8}</ProjectGuid>
@@ -57,10 +60,14 @@
     <Compile Include="DivineIntervention\Logging\Examples\MiniMapPerformanceMod.cs" />
     <Compile Include="DivineIntervention\Patching\DynamicPatchProcessor.cs" />
     <Compile Include="DivineIntervention\Patching\Examples\MiniMapContext.cs" />
+    <Compile Include="DivineIntervention\Patching\Examples\MyModManager.cs" />
+    <Compile Include="DivineIntervention\Patching\Examples\DivineInterventionExamples.cs" />
+    <Compile Include="DivineIntervention\Patching\GenericHook.cs" />
+    <Compile Include="DivineIntervention\Patching\HookDispatcher.cs" />
+    <Compile Include="DivineIntervention\Patching\HookFactory.cs" />
+    <Compile Include="DivineIntervention\Patching\IHook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DivineIntervention\Events\Contracts\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

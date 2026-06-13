@@ -34,10 +34,48 @@
 * ======================================================================================
 */
 
-namespace DivineIntervention
+using DivineIntervention.Logging;
+using DivineIntervention.Patching;
+using Verse;
+
+namespace DivineIntervention.Examples
 {
-    public class DivineInterventionLib
+    public static class HookExamples
     {
-        // Hello World :)
+        private static IHook _myDynamicHook;
+
+        // Pattern 1: The Observer
+        public static void RunObserverExample()
+        {
+            HookFactory.Create<Pawn>(
+                "Tick",
+                (pawn) => DivineLog.Debug($"Observer: {pawn.LabelShort} is ticking!")
+            );
+        }
+
+        // Pattern 2: The Conditional Guard
+        public static void RunConditionalExample()
+        {
+            HookFactory.Create<Pawn>(
+                "Tick",
+                (pawn) => DivineLog.Debug($"Conditional: {pawn.LabelShort} is working."),
+                condition: () => !Find.TickManager.Paused
+            );
+        }
+
+        // Pattern 3: The Dynamic Lifecycle
+        public static void EnableFeature()
+        {
+            _myDynamicHook = HookFactory.Create<Pawn>(
+                "Tick",
+                (pawn) => DivineLog.Debug("Dynamic: Feature active.")
+            );
+        }
+
+        public static void DisableFeature()
+        {
+            _myDynamicHook?.Unpatch();
+            _myDynamicHook = null;
+        }
     }
 }

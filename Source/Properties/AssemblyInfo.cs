@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DivineInterventionX")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Divine Intervention")]
+[assembly: AssemblyDescription("Mr. God's RimWorld Modding Library: High-performance, zero-allocation utilities for RimWorld modders.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DivineInterventionX")]
+[assembly: AssemblyCompany("Kyle Givler")]
+[assembly: AssemblyProduct("Divine Intervention")]
 [assembly: AssemblyCopyright("Copyright ©  2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("0.0.0.1")]
+[assembly: AssemblyFileVersion("0.0.0.1")]
