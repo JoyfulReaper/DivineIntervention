@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../DivineIntervention.Tests/DivineIntervention.Tests.csproj" Id="fe029fa5-6095-4351-87ff-baf749b990b2" />
+  <Project Path="../DivineIntervention.Testing/DivineIntervention.Testing.csproj" Id="6673554b-c0ee-45eb-8834-b02570c05939" />
+  <Project Path="DivineIntervention.csproj" Id="b5cd8ed9-70f3-4103-a280-cdb855352ed8" />
+</Solution>
