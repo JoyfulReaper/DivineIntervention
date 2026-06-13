@@ -1,7 +1,9 @@
 ﻿/*
 * Divine Intervention RimWorld Modding Framework
-* * Make Mods the Right Way(tm)
-* * Copyright (c) 2026 Kyle Givler
+* 
+* Make Mods the Right Way(tm)
+* Copyright (c) 2026 Kyle Givler
+* 
 * Licensed under the MIT License.
 */
 using DivineIntervention.Logging;
@@ -31,6 +33,8 @@ namespace DivineIntervention.Patching
                 _patchedMethods.Remove(method);
             };
         }
+
+        #region Generic Overloads (For Instance Classes)
 
         /// <summary>
         /// Creates a simple Observer hook that runs logic before a method executes without altering control flow.
@@ -84,5 +88,39 @@ namespace DivineIntervention.Patching
 
             return hook;
         }
+
+        #endregion
+
+        #region Explicit Type Overloads (For Static Classes)
+
+        /// <summary>
+        /// Creates a Power User hook using explicit Type structures. Necessary for intercepting static classes.
+        /// </summary>
+        // FIX: Changed 'Delegate' to 'HookPrefix<object>' and 'HookPostfix<object>'
+        public static IHook Create(Type targetType, string methodName, HookPrefix<object> onPrefix = null, HookPostfix<object> onPostfix = null, Func<bool> condition = null)
+        {
+            var targetMethod = AccessTools.Method(targetType, methodName);
+
+            if (targetMethod == null)
+            {
+                DivineLog.Error($"[HookFactory] Could not find method {methodName} on type {targetType.Name}");
+                return null;
+            }
+
+            // Now perfectly matches the expected delegate types
+            var hook = new GenericHook<object>(targetMethod, onPrefix, onPostfix, condition);
+            HookDispatcher.Register(targetMethod, hook);
+
+            if (_patchedMethods.Add(targetMethod))
+            {
+                _harmony.Patch(targetMethod,
+                    prefix: new HarmonyMethod(typeof(HookDispatcher), nameof(HookDispatcher.PrefixForwarder)),
+                    postfix: new HarmonyMethod(typeof(HookDispatcher), nameof(HookDispatcher.PostfixForwarder))
+                );
+            }
+
+            return hook;
+        }
     }
 }
+        #endregion

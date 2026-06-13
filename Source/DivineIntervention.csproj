@@ -54,13 +54,13 @@
   <ItemGroup>
     <Compile Include="DivineInterventionLib.cs" />
     <Compile Include="DivineIntervention\Events\Examples\LooseMessageBus.cs" />
-    <Compile Include="DivineIntervention\Events\Examples\MyEconmyMod.cs" />
+    <Compile Include="DivineIntervention\Events\Examples\MessageBusExample.cs" />
     <Compile Include="DivineIntervention\Events\MessageBus.cs" />
     <Compile Include="DivineIntervention\Logging\DivneLog.cs" />
     <Compile Include="DivineIntervention\Logging\Examples\LoggingExamples.cs" />
     <Compile Include="DivineIntervention\Patching\DynamicPatchProcessor.cs" />
+    <Compile Include="DivineIntervention\Patching\Examples\AdvancedStatePatchExample.cs" />
     <Compile Include="DivineIntervention\Patching\Examples\HookExamples.cs" />
-    <Compile Include="DivineIntervention\Patching\Examples\MiniMapContext.cs" />
     <Compile Include="DivineIntervention\Patching\Examples\MyModManager.cs" />
     <Compile Include="DivineIntervention\Patching\GenericHook.cs" />
     <Compile Include="DivineIntervention\Patching\HookDelegates.cs" />

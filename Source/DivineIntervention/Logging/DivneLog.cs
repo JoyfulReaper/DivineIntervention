@@ -10,71 +10,88 @@
  * Licensed under the MIT License.
  */
 
+using System;
 using System.Diagnostics;
+using Verse;
 
-namespace DivineIntervention.Logging
+namespace DivineIntervention.Logging;
+
+/// <summary>
+/// A static class for logging messages with customizable color and prefix.
+/// </summary>
+public static class DivineLog
 {
     /// <summary>
-    /// Core framework logging utility. Provides unified, throttled, and conditionally compiled 
-    /// logging channels across all framework modules and consuming mods.
+    /// The prefix for all log messages.
     /// </summary>
-    public static class DivineLog
+    public static string LoggingPrefix { get; set; } = "DivineIntervention";
+
+    /// <summary>
+    /// Whether to use color in log messages or not.
+    /// </summary>
+    public static bool UseColor { get; set; } = true;
+
+    /// <summary>
+    /// The color used for log messages if UseColor is true.
+    /// </summary>
+    public static string LoggingColor { get; set; } = "#66CCFF";
+
+    /// <summary>
+    /// The formatted prefix for log messages.
+    /// </summary>
+    private static string FormattedPrefix => UseColor
+        ? $"<color={LoggingColor}>[{LoggingPrefix}]</color>"
+        : $"[{LoggingPrefix}]";
+
+    /// <summary>
+    /// A struct for creating a scope where LoggingColor can be changed and will revert back automatically.
+    /// </summary>
+    /// <param name="newColor">The color to set for the scope.</param>
+    public struct ColorScope : IDisposable
     {
-        /// <summary>
-        /// Gets or sets the active textual identifier used to tag log statements.
-        /// Defaults to the framework signature but should be reassigned at mod initialization.
-        /// </summary>
-        public static string LoggingPrefix { get; set; } = "DivineIntervention";
+        private readonly string _previousColor;
 
         /// <summary>
-        /// Gets or sets whether rich text hexadecimal color tags should be injected into standard log output streams.
+        /// Create a new ColorScope with the specified color.
         /// </summary>
-        public static bool UseColor { get; set; } = true;
-
-        /// <summary>
-        /// Generates the stylized, context-aware prefix string for message routing.
-        /// </summary>
-        private static string FormattedPrefix => UseColor
-            ? $"<color=#66CCFF>[{LoggingPrefix}]</color>"
-            : $"[{LoggingPrefix}]";
-
-        /// <summary>
-        /// Writes a verbose message to the engine log console only if the assembly is compiled under a Debug configuration flag.
-        /// </summary>
-        /// <param name="message">The informational text payload to display.</param>
-        [Conditional("DEBUG")]
-        public static void Debug(string message)
+        /// <param name="newColor">The color to set for the scope.</param>
+        public ColorScope(string newColor)
         {
-            Verse.Log.Message($"{FormattedPrefix}: {message}");
+            _previousColor = LoggingColor;
+            LoggingColor = newColor;
         }
 
         /// <summary>
-        /// Writes an informational message to the core engine log console across all build targets.
+        /// Dispose of the ColorScope, reverting LoggingColor back to the previous value.
         /// </summary>
-        /// <param name="message">The informational text payload to display.</param>
-        public static void Info(string message)
+        public void Dispose()
         {
-            Verse.Log.Message($"{FormattedPrefix}: {message}");
-        }
-
-        /// <summary>
-        /// Appends a non-fatal anomaly alert warning to the engine's tracking database.
-        /// </summary>
-        /// <param name="message">The warning text payload describing the execution anomaly.</param>
-        public static void Warning(string message)
-        {
-            // Bypasses color tags entirely to keep native warning highlighting completely clean
-            Verse.Log.Warning($"[{LoggingPrefix} Warning]: {message}");
-        }
-
-        /// <summary>
-        /// Forces a critical, high-visibility engine error registration execution sequence.
-        /// </summary>
-        /// <param name="message">The descriptive failure context payload explaining the exception.</param>
-        public static void Error(string message)
-        {
-            // Bypasses color tags entirely to keep native error tracing and stack markers precise
-            Verse.Log.Error($"[{LoggingPrefix} Error]: {message}");
+            LoggingColor = _previousColor;
         }
     }
+
+    /// <summary>
+    /// Log a debug message.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    [Conditional("DEBUG")]
+    public static void Debug(string message) => Log.Message($"{FormattedPrefix}: {message}");
+
+    /// <summary>
+    /// Log an info message.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    public static void Info(string message) => Log.Message($"{FormattedPrefix}: {message}");
+
+    /// <summary>
+    /// Log a warning message.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    public static void Warning(string message) => Log.Warning($"[{LoggingPrefix} Warning]: {message}");
+
+    /// <summary>
+    /// Log an error message.
+    /// </summary>
+    /// <param name="message">The message to log.</param>
+    public static void Error(string message) => Log.Error($"[{LoggingPrefix} Error]: {message}");
 }
