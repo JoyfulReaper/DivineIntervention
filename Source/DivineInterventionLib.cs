@@ -32,6 +32,8 @@
 * ======================================================================================
 */
 
+using DivineIntervention.Logging;
+
 namespace DivineIntervention
 {
     /// <summary>
@@ -42,7 +44,7 @@ namespace DivineIntervention
     {
         public static void Initialize()
         {
-
+            DivineLog.Info("Divine Intervention Framework Initialized.");
         }
     }
 }

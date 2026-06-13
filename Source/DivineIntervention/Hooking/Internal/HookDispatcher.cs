@@ -13,7 +13,7 @@ namespace DivineIntervention.Patching
     /// <summary>
     /// Internal dispatcher that routes Harmony-injected game method calls to registered <see cref="IHook"/> instances.
     /// </summary>
-    public static class HookDispatcher
+    internal static class HookDispatcher
     {
         private static readonly Dictionary<MethodBase, List<IHook>> _registry = new();
 

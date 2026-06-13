@@ -15,7 +15,7 @@ namespace DivineIntervention.Patching
     /// Includes robust exception handling to prevent mod-level crashes from halting the game loop.
     /// </summary>
     /// <typeparam name="T">The type that declares the method being patched.</typeparam>
-    public class GenericHook<T> : IHook
+    internal class GenericHook<T> : IHook
     {
         private readonly HookPrefix<T> _onPrefix;
         private readonly HookPostfix<T> _onPostfix;
