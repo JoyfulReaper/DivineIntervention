@@ -56,9 +56,12 @@
     <Compile Include="DivineIntervention\Examples\LooseMessageBusExample.cs" />
     <Compile Include="DivineIntervention\Examples\TypedMessageBusExample.cs" />
     <Compile Include="DivineIntervention\Events\MessageBus.cs" />
+<<<<<<<< HEAD:DivineIntervention/DivineIntervention.csproj
     <Compile Include="DivineIntervention\Hooking\HookAbstractions.cs" />
     <Compile Include="DivineIntervention\Hooking\IHarmonyEngine.cs" />
     <Compile Include="DivineIntervention\Hooking\Internal\HamonyEngine.cs" />
+========
+>>>>>>>> origin/main:Source/DivineIntervention.csproj
     <Compile Include="DivineIntervention\Logging\DivineLog.cs" />
     <Compile Include="DivineIntervention\Examples\LoggingExamples.cs" />
     <Compile Include="DivineIntervention\State\DynamicPatchProcessor.cs" />
