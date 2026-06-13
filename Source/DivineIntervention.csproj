@@ -53,22 +53,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DivineInterventionLib.cs" />
-    <Compile Include="DivineIntervention\Events\Examples\LooseMessageBus.cs" />
-    <Compile Include="DivineIntervention\Events\Examples\MessageBusExample.cs" />
+    <Compile Include="DivineIntervention\Events\Examples\LooseMessageBusExample.cs" />
+    <Compile Include="DivineIntervention\Events\Examples\TypedMessageBusExample.cs" />
     <Compile Include="DivineIntervention\Events\MessageBus.cs" />
     <Compile Include="DivineIntervention\Logging\DivneLog.cs" />
     <Compile Include="DivineIntervention\Logging\Examples\LoggingExamples.cs" />
-    <Compile Include="DivineIntervention\Patching\DynamicPatchProcessor.cs" />
-    <Compile Include="DivineIntervention\Patching\Examples\AdvancedStatePatchExample.cs" />
-    <Compile Include="DivineIntervention\Patching\Examples\HookExamples.cs" />
-    <Compile Include="DivineIntervention\Patching\Examples\MyModManager.cs" />
-    <Compile Include="DivineIntervention\Patching\GenericHook.cs" />
-    <Compile Include="DivineIntervention\Patching\HookDelegates.cs" />
-    <Compile Include="DivineIntervention\Patching\HookDispatcher.cs" />
-    <Compile Include="DivineIntervention\Patching\HookFactory.cs" />
-    <Compile Include="DivineIntervention\Patching\IHook.cs" />
+    <Compile Include="DivineIntervention\State\DynamicPatchProcessor.cs" />
+    <Compile Include="DivineIntervention\State\Examples\AdvancedStatePatchExample.cs" />
+    <Compile Include="DivineIntervention\Hooking\Examples\HookExamples.cs" />
+    <Compile Include="DivineIntervention\Hooking\Examples\MyModManager.cs" />
+    <Compile Include="DivineIntervention\Hooking\Internal\GenericHook.cs" />
+    <Compile Include="DivineIntervention\Hooking\Internal\HookDelegates.cs" />
+    <Compile Include="DivineIntervention\Hooking\Internal\HookDispatcher.cs" />
+    <Compile Include="DivineIntervention\Hooking\HookFactory.cs" />
+    <Compile Include="DivineIntervention\Hooking\IHook.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DivineIntervention\Patching\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -14,8 +14,8 @@
 //namespace DivineIntervention.Examples
 //{
 //    /// <summary>
-//    /// Environmental game state data packet required by the dynamic
-//    /// patching engine to evaluate minimap execution pipelines.
+//    /// Current minimap state used to determine whether
+//    /// Dubs' update patch should be enabled.
 //    /// </summary>
 //    public struct MiniMapContext
 //    {
