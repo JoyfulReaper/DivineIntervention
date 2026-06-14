@@ -1,105 +1,108 @@
 ﻿/*
  * Divine Intervention RimWorld Modding Framework
  * 
- * This code is partially based on Replace Stuff
- * Copyright (c) 2025 Alex Tearse-Doyle
- * Licensed under the MIT License.
- *
- * Modified by Kyle Givler
+ * Make Mods the Right Way(tm)
+ * 
  * Copyright (c) 2026 Kyle Givler
  * Licensed under the MIT License.
  */
 
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using Verse;
 
 namespace DivineIntervention.Logging;
 
 /// <summary>
-/// A static class for logging messages with customizable color and prefix.
+/// A high-performance, isolated logging engine supporting both self-managed (DIY) 
+/// and framework-cached (Registry) patterns. Allows dynamic runtime color modification 
+/// while preserving hot-path string optimization.
 /// </summary>
-public static class DivineLog
+public class DivineLog
 {
-    // Default execution route uses RimWorld's native logger
-    public static Action<string> ErrorRouter { get; set; } = (message) =>
-        Log.Error(message);
+    private static readonly ConcurrentDictionary<string, DivineLog> _registry = new();
+
+    private readonly string _prefix;
+    private readonly bool _useColor;
+    private string _color;
+    private string _formattedPrefix;
 
     /// <summary>
-    /// The prefix for all log messages.
+    /// The Managed Registry: Safely retrieves an existing logger or creates a new one.
+    /// Prevents duplicate memory allocations across decoupled files.
     /// </summary>
-    public static string LoggingPrefix { get; set; } = "DivineIntervention";
-
-    /// <summary>
-    /// Whether to use color in log messages or not.
-    /// </summary>
-    public static bool UseColor { get; set; } = true;
-
-    /// <summary>
-    /// The color used for log messages if UseColor is true.
-    /// </summary>
-    public static string LoggingColor { get; set; } = "#66CCFF";
-
-    /// <summary>
-    /// The formatted prefix for log messages.
-    /// </summary>
-    private static string FormattedPrefix => UseColor
-        ? $"<color={LoggingColor}>[{LoggingPrefix}]</color>"
-        : $"[{LoggingPrefix}]";
-
-    /// <summary>
-    /// A struct for creating a scope where LoggingColor can be changed and will revert back automatically.
-    /// </summary>
-    /// <param name="newColor">The color to set for the scope.</param>
-    public struct ColorScope : IDisposable
+    public static DivineLog GetLogger(string prefix, string colorHex = "#66CCFF", bool useColor = true)
     {
-        private readonly string _previousColor;
+        return _registry.GetOrAdd(prefix, (key) => new DivineLog(key, colorHex, useColor));
+    }
 
-        /// <summary>
-        /// Create a new ColorScope with the specified color.
-        /// </summary>
-        /// <param name="newColor">The color to set for the scope.</param>
-        public ColorScope(string newColor)
-        {
-            _previousColor = LoggingColor;
-            LoggingColor = newColor;
-        }
+    /// <summary>
+    /// Isolated execution route for handling error redirections safely per mod instance.
+    /// </summary>
+    public Action<string> ErrorRouter { get; set; }
 
-        /// <summary>
-        /// Dispose of the ColorScope, reverting LoggingColor back to the previous value.
-        /// </summary>
-        public void Dispose()
+    /// <summary>
+    /// Gets or sets the hex color code used for this logger instance.
+    /// Automatically recalculates the optimized string cache on update.
+    /// </summary>
+    public string Color
+    {
+        get => _color;
+        set
         {
-            LoggingColor = _previousColor;
+            if (_color != value)
+            {
+                _color = value;
+                UpdateFormattedPrefix();
+            }
         }
     }
 
     /// <summary>
-    /// Log a debug message.
+    /// The DIY Route: Public constructor for explicit lifecycle and reference management.
     /// </summary>
-    /// <param name="message">The message to log.</param>
+    public DivineLog(string prefix, string colorHex = "#66CCFF", bool useColor = true)
+    {
+        _prefix = prefix;
+        _useColor = useColor;
+        _color = colorHex;
+
+        UpdateFormattedPrefix();
+        ErrorRouter = (message) => Log.Error(message);
+    }
+
+    /// <summary>
+    /// Generates and caches the prefix. This ensures string manipulation only happens 
+    /// when initializing the logger or explicitly changing its color.
+    /// </summary>
+    private void UpdateFormattedPrefix()
+    {
+        _formattedPrefix = _useColor ? $"<color={_color}>[{_prefix}]</color>" : $"[{_prefix}]";
+    }
+
+    /// <summary>
+    /// Log a debug message. Automatically stripped entirely out of production Release builds.
+    /// </summary>
     [Conditional("DEBUG")]
-    public static void Debug(string message) =>
-        Log.Message($"{FormattedPrefix}: {message}");
+    public void Debug(string message) =>
+        Log.Message($"{_formattedPrefix}: {message}");
 
     /// <summary>
     /// Log an info message.
     /// </summary>
-    /// <param name="message">The message to log.</param>
-    public static void Info(string message) =>
-        Log.Message($"{FormattedPrefix}: {message}");
+    public void Info(string message) =>
+        Log.Message($"{_formattedPrefix}: {message}");
 
     /// <summary>
     /// Log a warning message.
     /// </summary>
-    /// <param name="message">The message to log.</param>
-    public static void Warning(string message) =>
-        Log.Warning($"[{LoggingPrefix} Warning]: {message}");
+    public void Warning(string message) =>
+        Log.Warning($"{_formattedPrefix} Warning: {message}");
 
     /// <summary>
-    /// Log an error message.
+    /// Log an error message using the localized instance router.
     /// </summary>
-    /// <param name="message">The message to log.</param>
-    public static void Error(string message) =>
-        ErrorRouter?.Invoke(message);
+    public void Error(string message) =>
+        ErrorRouter?.Invoke($"{_formattedPrefix} Error: {message}");
 }

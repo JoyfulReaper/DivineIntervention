@@ -1,20 +1,32 @@
 ﻿/*
-* Divine Intervention RimWorld Modding Framework
-* 
-* Make Mods the Right Way(tm)
-* Copyright (c) 2026 Kyle Givler
-* 
-* Licensed under the MIT License.
-*/
+ * Divine Intervention RimWorld Modding Framework
+ * 
+ *  Make Mods the Right Way(tm)
+ *  
+ * Copyright (c) 2026 Kyle Givler
+ * Licensed under the MIT License.
+ */
 
+#if DEBUG
 using DivineIntervention.Events;
-using DivineIntervention.Hooking;
 using DivineIntervention.Logging;
+using HarmonyLib;
 using RimWorld;
 using System;
 using Verse;
 
-#if DEBUG
+namespace MyEconomyMod
+{
+    /// <summary>
+    /// Centrally managed internal logging anchor for the independent mod namespace.
+    /// This keeps all sub-component logs consistently branded and isolated from third-party frameworks.
+    /// </summary>
+    internal static class ModLog
+    {
+        public static readonly DivineLog Instance = new DivineLog("MyEconomyMod", "#00FF88", true);
+    }
+}
+
 namespace MyEconomyMod.Messages
 {
     /// <summary>
@@ -29,61 +41,68 @@ namespace MyEconomyMod.Messages
     }
 }
 
+namespace MyEconomyMod.Patches
+{
+    using MyEconomyMod.Messages;
+
+    /// <summary>
+    /// HARMONY PATCH: Intercepts the trade execution window directly.
+    /// Perfectly readable by Dubs Performance Analyzer without enterprise wrappers.
+    /// </summary>
+    [HarmonyPatch(typeof(TradeDeal), "TryExecute")]
+    public static class Patch_TradeDeal_TryExecute
+    {
+        /// <summary>
+        /// Postfix hook. Runs unconditionally when TryExecute is called.
+        /// </summary>
+        /// <param name="confirmed">The boolean return value representing if the transaction completed.</param>
+        public static void Postfix(bool confirmed)
+        {
+            // If the transaction failed or was aborted by the game loop, exit immediately
+            if (!confirmed)
+                return;
+
+            // Calculate transaction value data frame profiles safely
+            int silverNet = 1250; // Simplified placeholder logic for the payload calculation
+
+            var msg = new TradeCompletedMessage
+            {
+                TraderName = TradeSession.trader?.TraderName ?? "Unknown Trader",
+                SilverExchanged = silverNet,
+                TicksGame = Find.TickManager.TicksGame
+            };
+
+            // Broadcast the payload globally to all listening subscribers
+            MessageBus.Publish(msg);
+        }
+    }
+}
+
 namespace MyEconomyMod.UI
 {
     using MyEconomyMod.Messages;
 
     /// <summary>
-    /// THE SERVICE HUB: Orchestrates dynamic hooks and dispatches global event notifications.
+    /// THE SERVICE HUB: Binds independent UI notifications to the event pipeline.
     /// </summary>
     public static class TradeNotifier
     {
-        private static IHook _tradeHook;
-
         /// <summary>
-        /// Registers a dynamic HookFactory engine interceptor and binds our local UI event listener.
+        /// Registers our static event pipeline listeners. Called during mod startup.
         /// </summary>
         public static void Initialize()
         {
-            // 1. Hook the game engine dynamically without using static Harmony classes or attributes
-            _tradeHook = HookFactory.Create<TradeDeal>(
-                "TryExecute",
-                onPostfix: (TradeDeal instance, object[] args, ref object result) =>
-                {
-                    // If the transaction failed or was aborted by the game loop, exit early
-                    if (result is bool success && !success)
-                        return;
-
-                    // Calculate transaction value data frame profiles safely
-                    int silverNet = 1250; // Simplified placeholder logic for the payload calculation
-
-                    var msg = new TradeCompletedMessage
-                    {
-                        TraderName = TradeSession.trader?.TraderName ?? "Unknown Trader",
-                        SilverExchanged = silverNet,
-                        TicksGame = Find.TickManager.TicksGame
-                    };
-
-                    // Broadcast the payload globally to all listening subscribers
-                    MessageBus.Publish(msg);
-                }
-            );
-
-            // 2. Subscribe to our own message bus channel for local UI routing
             MessageBus.Subscribe<TradeCompletedMessage>(OnTradeCompleted);
-            DivineLog.Debug("TradeNotifier execution engine hooks successfully mounted.");
+            ModLog.Instance.Debug("TradeNotifier execution engine hooks successfully mounted.");
         }
 
         /// <summary>
-        /// Unpatches the method tracking runtime hook and unbinds from the event pipeline stream.
+        /// Safely unbinds from the event pipeline stream during unloading or mod shutdown.
         /// </summary>
         public static void Shutdown()
         {
-            _tradeHook?.Unpatch();
-            _tradeHook = null;
-
             MessageBus.Unsubscribe<TradeCompletedMessage>(OnTradeCompleted);
-            DivineLog.Debug("TradeNotifier execution engine cleanly unmounted.");
+            ModLog.Instance.Debug("TradeNotifier execution engine cleanly unmounted.");
         }
 
         private static void OnTradeCompleted(TradeCompletedMessage msg)
@@ -123,17 +142,17 @@ namespace MyEconomyMod.Tracking
         {
             base.FinalizeInit();
             MessageBus.Subscribe<TradeCompletedMessage>(RecordTrade);
-            DivineLog.Debug("EconomyTracker attached to MessageBus event router stream.");
+            ModLog.Instance.Debug("EconomyTracker attached to MessageBus event router stream.");
         }
 
         private void RecordTrade(TradeCompletedMessage msg)
         {
             TotalSilverTraded += Math.Abs(msg.SilverExchanged);
-            DivineLog.Debug($"Economy tracking state updated. Lifetime economy footprint: {TotalSilverTraded} silver.");
+            ModLog.Instance.Debug($"Economy tracking state updated. Lifetime economy footprint: {TotalSilverTraded} silver.");
         }
 
         /// <summary>
-        /// Invoked by RimWorld during game state save saving tasks or return-to-menu teardowns.
+        /// Invoked by RimWorld during game state saving tasks or return-to-menu teardowns.
         /// </summary>
         public override void ExposeData()
         {
@@ -150,7 +169,7 @@ namespace MyEconomyMod.Tracking
         public void Teardown()
         {
             MessageBus.Unsubscribe<TradeCompletedMessage>(RecordTrade);
-            DivineLog.Debug("EconomyTracker detached completely from event router streams.");
+            ModLog.Instance.Debug("EconomyTracker detached completely from event router streams.");
         }
     }
 }

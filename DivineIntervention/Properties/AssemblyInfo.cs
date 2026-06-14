@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+﻿global using static DivineIntervention.DivineInterventionLib;
+using System.Reflection;
 using System.Runtime.InteropServices;
+
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -9,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kyle Givler")]
 [assembly: AssemblyProduct("Divine Intervention")]
-[assembly: AssemblyCopyright("Copyright ©  2026")]
+[assembly: AssemblyCopyright("Copyright © 2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -28,8 +30,8 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("0.0.0.1")]
-[assembly: AssemblyFileVersion("0.0.0.1")]
+[assembly: AssemblyVersion("0.0.0.2")]
+[assembly: AssemblyFileVersion("0.0.0.2")]
 
 // Grant the unit testing project access to internal classes like HookDispatcher
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("DivineIntervention.Tests")]

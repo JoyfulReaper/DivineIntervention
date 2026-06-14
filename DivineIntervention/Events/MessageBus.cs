@@ -7,7 +7,6 @@
  * Licensed under the MIT License.
  */
 
-using DivineIntervention.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,7 +94,9 @@ public static class MessageBus
                     // Grab the class name where the method lives, or default to "Unknown" if it fails
                     string subscriberName = subs[i].Method.DeclaringType?.Name ?? "Unknown";
 
-                    DivineLog.Debug($"Exception in loose lane subscriber Topic: {topic}\n" +
+
+
+                    Logger.Debug($"Exception in loose lane subscriber Topic: {topic}\n" +
                         $" Subscriber: {subscriberName}\n" +
                         $" Object HashCode: {(data != null ? data.GetHashCode().ToString() : "null")}\n" +
                         $" Message: {ex.Message}");
@@ -186,7 +187,7 @@ public static class MessageBus
             }
             catch (Exception ex)
             {
-                DivineLog.Error($"Exception during MessageBus publish for {type.Name}: {ex.Message}");
+                Logger.Error($"Exception during MessageBus publish for {type.Name}: {ex.Message}");
             }
         }
     }
