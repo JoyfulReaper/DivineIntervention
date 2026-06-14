@@ -7,12 +7,14 @@
 * Licensed under the MIT License.
 */
 
+using System;
+
 namespace DivineIntervention.Hooking;
 
 /// <summary>
 /// Represents a dynamic, unpatchable hook that intercepts game methods.
 /// </summary>
-public interface IHook
+public interface IHook : IDisposable
 {
     /// <summary>
     /// Logic to execute before the intercepted method is called. 
@@ -34,4 +36,6 @@ public interface IHook
     /// Removes this hook from the dispatcher registry and cleans up Harmony patches if no hooks remain.
     /// </summary>
     void Unpatch();
+
+    new void Dispose();
 }

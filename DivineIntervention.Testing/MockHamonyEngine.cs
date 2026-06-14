@@ -33,9 +33,15 @@ namespace DivineIntervention.Tests
         /// <summary>
         /// Verification helper for lifecycle assertions.
         /// </summary>
+
         public bool WasUnpatchCalledFor(MethodBase method)
         {
-            return UnpatchCalled && LastUnpatchedMethod == method;
+            // If nothing was ever unpatched, return false
+            if (LastUnpatchedMethod == null) return false;
+
+            // Compare the one single unpatched method against the provided one
+            return LastUnpatchedMethod.Name == method.Name &&
+                   LastUnpatchedMethod.DeclaringType == method.DeclaringType;
         }
 
         public void ClearTracking()

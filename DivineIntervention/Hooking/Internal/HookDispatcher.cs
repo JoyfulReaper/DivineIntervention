@@ -38,8 +38,7 @@ internal static class HookDispatcher
     {
         if (_registry.TryGetValue(method, out var hooks))
         {
-            hooks.Remove(hook);
-
+            bool removed = hooks.Remove(hook);
             if (hooks.Count == 0)
             {
                 _registry.Remove(method);

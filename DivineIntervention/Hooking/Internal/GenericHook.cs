@@ -87,4 +87,7 @@ internal class GenericHook<T> : IHook
 
     /// <inheritdoc />
     public void Unpatch() => HookDispatcher.Unregister(_targetMethod, this);
+
+    public void Dispose() =>
+        Unpatch();
 }

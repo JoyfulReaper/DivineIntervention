@@ -12,6 +12,7 @@ using DivineIntervention.Hooking;
 using DivineIntervention.Hooking.Internal;
 using DivineIntervention.Logging;
 using NUnit.Framework;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace DivineIntervention.Tests;
@@ -37,6 +38,10 @@ public class HookFactoryTests
         //Inject the mock harmony engine
         HookFactory.HarmonyEngine = new MockHarmonyEngine();
 
+        // HARD RESET the registry via reflection to ensure zero contamination
+        var field = typeof(HookDispatcher).GetField("_registry", BindingFlags.Static | BindingFlags.NonPublic);
+        field?.SetValue(null, new Dictionary<MethodBase, List<IHook>>());
+
         // Redirect the framework logger to standard Console out for headless execution
         DivineLog.ErrorRouter = (message) => System.Console.WriteLine($"[LOG REDIRECT] {message}");
     }
@@ -59,9 +64,29 @@ public class HookFactoryTests
         // Assert
         Assert.IsNotNull(hook, "Hook should not be null.");
 
-        // If the factory logic is correct, the HookDispatcher 
-        // should have registered this hook for the method.
-        // (TODO: need to expose a way to check registration in Dispatcher)
+        // Test verification: Verify patching occurred
+        var mockEngine = (MockHarmonyEngine)HookFactory.HarmonyEngine;
+        Assert.IsTrue(mockEngine.PatchCalled, "Hook factory should have triggered Harmony patching on first creation.");
+    }
+
+    [Test]
+    public void HookDispose_TriggersFullLifecycleCleanup()
+    {
+        var mockEngine = (MockHarmonyEngine)HookFactory.HarmonyEngine;
+        mockEngine.ClearTracking();
+
+        // Fetch the exact MethodBase instance
+        var targetMethod = typeof(MockTarget).GetMethod(nameof(MockTarget.TargetMethod));
+
+        // Arrange: Create a hook
+        IHook hook = HookFactory.Create<MockTarget>(nameof(MockTarget.TargetMethod), (instance) => { });
+
+        // Act: Dispose (Unpatch)
+        hook.Dispose();
+
+        // Assert using the same instance
+        Assert.IsTrue(mockEngine.WasUnpatchCalledFor(targetMethod),
+            "Disposing the only hook should have triggered an Unpatch for the target method.");
     }
 
     [Test]
