@@ -1,12 +1,13 @@
 ﻿/*
  * Divine Intervention RimWorld Modding Framework
  * 
- * Make Mods the Right Way(tm)
- * 
- *  Copyright (c) 2026 Kyle Givler
- *  Licensed under the MIT License.
+ *  Make Mods the Right Way(tm)
+ *  
+ * Copyright (c) 2026 Kyle Givler
+ * Licensed under the MIT License.
  */
 
+#if DEBUG
 using DivineIntervention.Events;
 using DivineIntervention.Logging;
 using HarmonyLib;
@@ -14,7 +15,18 @@ using RimWorld;
 using System;
 using Verse;
 
-#if DEBUG
+namespace MyEconomyMod
+{
+    /// <summary>
+    /// Centrally managed internal logging anchor for the independent mod namespace.
+    /// This keeps all sub-component logs consistently branded and isolated from third-party frameworks.
+    /// </summary>
+    internal static class ModLog
+    {
+        public static readonly DivineLog Instance = new DivineLog("MyEconomyMod", "#00FF88", true);
+    }
+}
+
 namespace MyEconomyMod.Messages
 {
     /// <summary>
@@ -81,7 +93,7 @@ namespace MyEconomyMod.UI
         public static void Initialize()
         {
             MessageBus.Subscribe<TradeCompletedMessage>(OnTradeCompleted);
-            DivineLog.Debug("TradeNotifier execution engine hooks successfully mounted.");
+            ModLog.Instance.Debug("TradeNotifier execution engine hooks successfully mounted.");
         }
 
         /// <summary>
@@ -90,7 +102,7 @@ namespace MyEconomyMod.UI
         public static void Shutdown()
         {
             MessageBus.Unsubscribe<TradeCompletedMessage>(OnTradeCompleted);
-            DivineLog.Debug("TradeNotifier execution engine cleanly unmounted.");
+            ModLog.Instance.Debug("TradeNotifier execution engine cleanly unmounted.");
         }
 
         private static void OnTradeCompleted(TradeCompletedMessage msg)
@@ -130,13 +142,13 @@ namespace MyEconomyMod.Tracking
         {
             base.FinalizeInit();
             MessageBus.Subscribe<TradeCompletedMessage>(RecordTrade);
-            DivineLog.Debug("EconomyTracker attached to MessageBus event router stream.");
+            ModLog.Instance.Debug("EconomyTracker attached to MessageBus event router stream.");
         }
 
         private void RecordTrade(TradeCompletedMessage msg)
         {
             TotalSilverTraded += Math.Abs(msg.SilverExchanged);
-            DivineLog.Debug($"Economy tracking state updated. Lifetime economy footprint: {TotalSilverTraded} silver.");
+            ModLog.Instance.Debug($"Economy tracking state updated. Lifetime economy footprint: {TotalSilverTraded} silver.");
         }
 
         /// <summary>
@@ -157,7 +169,7 @@ namespace MyEconomyMod.Tracking
         public void Teardown()
         {
             MessageBus.Unsubscribe<TradeCompletedMessage>(RecordTrade);
-            DivineLog.Debug("EconomyTracker detached completely from event router streams.");
+            ModLog.Instance.Debug("EconomyTracker detached completely from event router streams.");
         }
     }
 }

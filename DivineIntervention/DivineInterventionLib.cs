@@ -44,10 +44,15 @@ namespace DivineIntervention;
 /// </summary>
 public static class DivineInterventionLib
 {
-    public const string VERSION = "0.0.1";
+    public const string VERSION = "0.0.2";
+    private static readonly DivineLog _logger = new("DiviniIntervention", "#66CCFF", true);
+
+    public static readonly DivineLog Logger = _logger;
 
     public static void Initialize()
     {
-        DivineLog.Info($"Framework Initialized Version {VERSION}");
+        Logger.Info($"Framework Initialized Version {VERSION}");
+
+
     }
 }

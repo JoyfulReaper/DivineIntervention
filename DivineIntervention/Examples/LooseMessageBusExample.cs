@@ -4,7 +4,7 @@
  *  Make Mods the Right Way(tm)
  *  
  *  Copyright (c) 2026 Kyle Givler
- *  Licensed under the MIT License.
+ * Licensed under the MIT License.
  */
 
 #if DEBUG
@@ -47,8 +47,11 @@ namespace DivineIntervention.Examples
     [HarmonyPatch(typeof(FactionGiftUtility), "GiveGiftResult")]
     public static class Patch_FactionGiftUtility_GiveGiftResult
     {
+        // Mod A instantiates and manages its own private logger instance safely without the registry
+        private static readonly DivineLog Log = new DivineLog("ModA_Publisher", "#66CCFF", true);
+
         /// <summary>
-        /// Example feature flag to completely bypass the execution path.
+        /// Example feature flag to bypass the execution path.
         /// </summary>
         public static bool IsFeatureEnabled = true;
 
@@ -66,7 +69,7 @@ namespace DivineIntervention.Examples
             // Broadcast the value out over the string-keyed global channel. 
             // Any third-party mod listening to "ModA_SilverCount" will receive this value instantly.
             MessageBus.Publish("ModA_SilverCount", currentSilverValue);
-            DivineLog.Debug($"[Mod A] Dispatched balance update of {currentSilverValue} silver over Loose Lane.");
+            Log.Debug($"Dispatched balance update of {currentSilverValue} silver over Loose Lane.");
         }
     }
 
@@ -76,6 +79,9 @@ namespace DivineIntervention.Examples
     /// </summary>
     public static class ModBSubscriberHub
     {
+        // Mod B instantiates and manages its own independent logger instance with its own distinct color identity
+        private static readonly DivineLog Log = new DivineLog("ModB_Subscriber", "orange", true);
+
         // Explicitly maintain a reference to our action delegate so we can safely unregister it later!
         private static readonly Action<object> OnSilverChangedHandler = (payload) =>
         {
@@ -84,16 +90,16 @@ namespace DivineIntervention.Examples
                 // CRITICAL REQUIREMENT: Explicit unboxing/casting via pattern matching
                 if (payload is int silverCount)
                 {
-                    DivineLog.Info($"[Mod B] Cross-Mod Event Captured! Mod A reported a clean balance of {silverCount} silver.");
+                    Log.Info($"Cross-Mod Event Captured! Mod A reported a clean balance of {silverCount} silver.");
                 }
                 else
                 {
-                    DivineLog.Warning($"[Mod B] Received unexpected data payload schema type on channel 'ModA_SilverCount'.");
+                    Log.Warning($"Received unexpected data payload schema type on channel 'ModA_SilverCount'.");
                 }
             }
             catch (Exception ex)
             {
-                DivineLog.Error($"[Mod B] Execution crash processing third-party data frame: {ex.Message}");
+                Log.Error($"Execution crash processing third-party data frame: {ex.Message}");
             }
         };
 
@@ -104,7 +110,7 @@ namespace DivineIntervention.Examples
         {
             // Subscribe using the shared magic-string token key
             MessageBus.Subscribe("ModA_SilverCount", OnSilverChangedHandler);
-            DivineLog.Debug("[Mod B] Registered loose listener tracking channel.");
+            Log.Debug("Registered loose listener tracking channel.");
         }
 
         /// <summary>
@@ -114,7 +120,7 @@ namespace DivineIntervention.Examples
         public static void Shutdown()
         {
             MessageBus.Unsubscribe("ModA_SilverCount", OnSilverChangedHandler);
-            DivineLog.Debug("[Mod B] Cleanly disconnected loose tracking channel.");
+            Log.Debug("Cleanly disconnected loose tracking channel.");
         }
     }
 }
