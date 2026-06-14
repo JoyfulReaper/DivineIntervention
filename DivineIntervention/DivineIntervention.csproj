@@ -58,6 +58,7 @@
     <Compile Include="Events\MessageBus.cs" />
     <Compile Include="Logging\DivineLog.cs" />
     <Compile Include="Examples\LoggingExamples.cs" />
+    <Compile Include="Logging\IDivineLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

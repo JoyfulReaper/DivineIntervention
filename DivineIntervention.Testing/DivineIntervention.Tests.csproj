@@ -17,4 +17,14 @@
     <ProjectReference Include="..\DivineIntervention\DivineIntervention.csproj" />
   </ItemGroup>
 
+<ItemGroup>
+  <Reference Include="Assembly-CSharp">
+    <HintPath>H:\SteamLibrary\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+    <Private>True</Private> </Reference>
+  <Reference Include="UnityEngine.CoreModule">
+    <HintPath>H:\SteamLibrary\steamapps\common\RimWorld\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    <Private>True</Private>
+  </Reference>
+</ItemGroup>
+
 </Project>
