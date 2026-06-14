@@ -1,54 +1,54 @@
-﻿/*
-* Divine Intervention RimWorld Modding Framework
-* 
-* Make Mods the Right Way(tm)
-* 
-* Copyright (c) 2026 Kyle Givler
-* Licensed under the MIT License.
-*/
+﻿///*
+//* Divine Intervention RimWorld Modding Framework
+//* 
+//* Make Mods the Right Way(tm)
+//* 
+//* Copyright (c) 2026 Kyle Givler
+//* Licensed under the MIT License.
+//*/
 
-using DivineIntervention.Hooking;
-using System.Reflection;
+//using DivineIntervention.Hooking;
+//using System.Reflection;
 
-namespace DivineIntervention.Tests
-{
-    public class MockHarmonyEngine : IHarmonyEngine
-    {
-        public bool PatchCalled => PatchCallCount > 0;
-        public int PatchCallCount { get; private set; }
-        public bool UnpatchCalled { get; private set; }
-        public MethodBase LastUnpatchedMethod { get; private set; }
+//namespace DivineIntervention.Tests
+//{
+//    public class MockHarmonyEngine : IHarmonyEngine
+//    {
+//        public bool PatchCalled => PatchCallCount > 0;
+//        public int PatchCallCount { get; private set; }
+//        public bool UnpatchCalled { get; private set; }
+//        public MethodBase LastUnpatchedMethod { get; private set; }
 
-        public void Patch(MethodBase original, HookMethodInfo prefix = null, HookMethodInfo postfix = null)
-        {
-            PatchCallCount++;
-        }
+//        public void Patch(MethodBase original, HookMethodInfo prefix = null, HookMethodInfo postfix = null)
+//        {
+//            PatchCallCount++;
+//        }
 
-        public void Unpatch(MethodBase method, HookPatchType type)
-        {
-            UnpatchCalled = true;
-            LastUnpatchedMethod = method;
-        }
+//        public void Unpatch(MethodBase method, HookPatchType type)
+//        {
+//            UnpatchCalled = true;
+//            LastUnpatchedMethod = method;
+//        }
 
-        /// <summary>
-        /// Verification helper for lifecycle assertions.
-        /// </summary>
+//        /// <summary>
+//        /// Verification helper for lifecycle assertions.
+//        /// </summary>
 
-        public bool WasUnpatchCalledFor(MethodBase method)
-        {
-            // If nothing was ever unpatched, return false
-            if (LastUnpatchedMethod == null) return false;
+//        public bool WasUnpatchCalledFor(MethodBase method)
+//        {
+//            // If nothing was ever unpatched, return false
+//            if (LastUnpatchedMethod == null) return false;
 
-            // Compare the one single unpatched method against the provided one
-            return LastUnpatchedMethod.Name == method.Name &&
-                   LastUnpatchedMethod.DeclaringType == method.DeclaringType;
-        }
+//            // Compare the one single unpatched method against the provided one
+//            return LastUnpatchedMethod.Name == method.Name &&
+//                   LastUnpatchedMethod.DeclaringType == method.DeclaringType;
+//        }
 
-        public void ClearTracking()
-        {
-            PatchCallCount = 0;
-            UnpatchCalled = false;
-            LastUnpatchedMethod = null;
-        }
-    }
-}
+//        public void ClearTracking()
+//        {
+//            PatchCallCount = 0;
+//            UnpatchCalled = false;
+//            LastUnpatchedMethod = null;
+//        }
+//    }
+//}
