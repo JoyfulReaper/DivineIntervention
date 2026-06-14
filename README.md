@@ -3,12 +3,11 @@
 **The Architecture of Sovereignty for RimWorld Modding** *Make Mods the Right Way™ (Because Randy Knows You Haven't Been)*
 
 > ⚠️ IMPORTANT: This framework is brand new and is largely untested. THERE IS CURRENTLY NO OFFICIAL BUILD. If you find a build of this on the Steam Workshop or elsewhere, it is a rogue clone so treat it with the same suspicion as a crashlanded transport pod full of toxic waste packs.
->
 > ⚠️ IMPORTANT: Currently all naming including the namespaces and namespace hierarchy, class names, PackageIDs and more are subject to change before the first official release. Don't get attached.
 
 ---
 
-Welcome to **Divine Intervention**, an ultra-high-performance, developer-friendly C# framework for RimWorld. Designed to eliminate boilerplate, state-machine spaghetti, and memory leaks. This library provides a foundation of decoupled, performant, and heavily documented core utilities, allowing you to focus on building features rather than fighting the engine (and the urge to harvest your pawns' organs). 
+Welcome to **Divine Intervention**, a high-performance, developer-friendly C# framework for RimWorld. This library provides a foundation of decoupled, performant, and heavily documented core utilities, allowing you to focus on building features rather than fighting the engine (and the urge to harvest your pawns' organs).
 
 * The core framework code is heavily commented for much faster understanding.
 * Extensive, fully compiling example usage for all features can be found in the Examples folder.
@@ -17,207 +16,63 @@ Welcome to **Divine Intervention**, an ultra-high-performance, developer-friendl
 
 ## 🛠️ Core Features
 
-Divine Intervention's primary goal is to abstract the volatile nature of static Harmony patches and manual console logging, giving you a clean, "God-tier" API for managing your mod's lifecycle before your codebase suffers a *Mental Break: Sad Wander*.
-
 ### 1. Production-Safe Contextual Logging (`DivineLog`)
 
-Console spam is worse than a Psychic Drone (Extreme). Stop cluttering your console with messy strings and `#if DEBUG` blocks. The `DivineLog` API is cleanly formatted, visually distinct, and automatically handles scope cleanup.
+Console spam is worse than a Psychic Drone (Extreme). Stop cluttering your console with messy strings and manually managed `#if DEBUG` blocks. The `DivineLog` engine supports complete cross-mod isolation while maximizing runtime performance.
 
 * **Zero-Overhead Diagnostics:** `DivineLog.Debug()` utilizes the `[Conditional("DEBUG")]` attribute to ensure debug traces are completely stripped out of your compiled assembly during production builds. They vanish faster than a stack of components left unroofed.
-* **Fail-Safe State Engine (Color Scopes):** Shift console colors dynamically using an `IDisposable` structure. The engine guarantees a safe return to your baseline mod color even if a critical exception crashes the execution thread midway. No more accidentally turning everyone else's logs Neon Amber forever.
+* **Pre-Computed Hot Paths:** Unlike traditional logging scripts that format strings on every game tick, updating the `Color` property on an instance recalculates your rich text prefix tags *exactly once* during assignment. Logging calls remain pure, lightning-fast pointer reads.
+* **Architectural Flexibility:** Power users can choose the **DIY Route** to completely manage reference lifetimes explicitly, while developers looking for fast, global file access can use the **Managed Registry** to pool instances cleanly without allocations.
 
 ```csharp
-// 1. Initialization (Set these properties at your mod's entry point)
-DivineLog.LoggingPrefix = "MyAwesomeMod";
-DivineLog.UseColor = true;
-DivineLog.LoggingColor = "#66CCFF"; // Electric Ice Blue default
+// APPROACH 1: THE MANAGED REGISTRY (Zero Reference Passing)
+// Fetch an isolated instance from any namespace, file, or thread instantly.
+// Internal caching maps this so identical prefixes share a single allocation memory footprint.
+var log = DivineLog.GetLogger("MyAwesomeMod", "#66CCFF", true);
 
-// 2. Standard Logging Channels
-DivineLog.Debug("Subsystem memory allocation mapping initialized."); // Vanishes in Release builds!
-DivineLog.Info("Core engine services connected smoothly.");
-DivineLog.Warning("Optional configuration node missing. Reverting to factory defaults.");
-DivineLog.Error("Critical structural exception! Local database table is unreachable.");
+log.Info("Core engine services connected smoothly."); // Default Electric Ice Blue
 
-// 3. Context Shifting via ColorScope
-DivineLog.Info("This line renders in the default Electric Ice Blue.");
+// APPROACH 2: THE DIY ROUTE (Explicit Lifecycle Ownership)
+// Instantiate your logger once at your mod entry point and hold a static reference.
+public static readonly DivineLog CustomLog = new DivineLog("MyDiyMod", "cyan");
 
-using (new DivineLog.ColorScope("#FFDD55")) // Neon Amber
-{
-    DivineLog.Info("Context changed: Processing sensitive XML payload files...");
-    DivineLog.Debug("This inner debug line is also styled in Neon Amber!");
+// Standard Channels
+CustomLog.Debug("Subsystem memory allocation mapping initialized."); // Stripped in Release!
+CustomLog.Warning("Optional configuration node missing. Reverting to factory defaults.");
+CustomLog.Error("Critical structural exception! Local database table is unreachable.");
 
-    // Nesting works out of the box; ColorScope preserves the stack state cleanly
-    using (new DivineLog.ColorScope("#FF5555")) // Hot Red Override
-    {
-        DivineLog.Info("Nested Emergency: Network timeout detected. Retrying handshake...");
-    }
+// Dynamic Color Modification on Existing Instances
+// Natively accepts hexadecimal code strings or literal color names parsed by Unity's markup engine.
+CustomLog.Color = "#FFDD55"; // Shift to Neon Amber
+CustomLog.Info("Context changed: Processing sensitive XML payload files...");
 
-    DivineLog.Info("Returned cleanly back to the Neon Amber context.");
-}
+CustomLog.Color = "red"; // Switch to text-defined literal red
+CustomLog.Info("Emergency context: Operation timed out.");
 
-// Zero leakage into subsequent logs or third-party assemblies
-DivineLog.Info("Back to baseline default color.");
+CustomLog.Color = "#66CCFF"; // Return safely to baseline profile with zero cross-mod configuration leak
 
 ```
 
 ---
 
-### 2. The Managed Patching Engine (`HookFactory`)
-
-Stop leaving dangling global state patches in your assembly. It's the modding equivalent of leaving an antigrain warhead in a wooden stockpile with a Pyromaniac. The `HookFactory` wraps standard Harmony logic into a dynamic, lifecycle-managed engine.
-
-Every hook created returns an `IHook` handle, tracking its own state and allowing execution branches to switch on or off safely at runtime.
-
-#### Complete Hooking Feature Set & Patterns
-
-```csharp
-// PATTERN 1: The Observer
-// Best for: Logging, tracking stats, or non-intrusive runtime monitoring.
-HookFactory.Create<Pawn>(
-    "Tick",
-    (pawn) => DivineLog.Debug($"Observer: {pawn.LabelShort} is ticking!")
-);
-
-// PATTERN 2: The Conditional Guard
-// Best for: Performance-critical hooks. Saves valuable CPU cycles by evaluating 
-// a condition predicate BEFORE running any patching logic.
-HookFactory.Create<Pawn>(
-    "Tick",
-    (pawn) => DivineLog.Debug($"Conditional: {pawn.LabelShort} is working."),
-    condition: () => !Find.TickManager.Paused
-);
-
-// PATTERN 3: The Dynamic Lifecycle
-// Best for: Toggling features dynamically based on user settings, UI buttons, or map switches.
-private IHook _myDynamicHook;
-
-public void EnableFeature()
-{
-    _myDynamicHook = HookFactory.Create<Pawn>(
-        "Tick",
-        (pawn) => DivineLog.Debug("Dynamic: Feature active.")
-    );
-}
-
-public void DisableFeature()
-{
-    _myDynamicHook?.Unpatch(); // Cleans up hooks instantly with zero dangling reference overhead
-    _myDynamicHook = null;
-}
-
-// PATTERN 4: The Hijacker (Return Value Mutation)
-// Best for: Stat rebalancing, forced state overrides, or forcing debug mock results.
-HookFactory.Create<Pawn>(
-    "get_HealthScale",
-    onPostfix: (Pawn instance, object[] args, ref object result) =>
-    {
-        result = 100f; // Intercepts and forces the final returned health scale float
-    }
-);
-
-// PATTERN 5: The Argument Mutator
-// Best for: Intercepting inputs to alter damage calculations, item costs, or AI values.
-HookFactory.Create<Pawn>(
-    "TakeDamage",
-    onPrefix: (instance, args) =>
-    {
-        if (args[0] is DamageInfo dinfo)
-        {
-            DivineLog.Debug($"Pawn {instance.LabelShort} is taking {dinfo.Amount} damage!");
-            // You can mutate elements inside the args array here before returning true!
-        }
-        return true; // Return true to let the original method proceed with arguments
-    }
-);
-
-// PATTERN 6: The Method Interceptor (Full Execution Override)
-// Best for: Completely bypassing broken core game logic or introducing entirely custom AI routines.
-HookFactory.Create<Pawn>(
-    "Tick",
-    onPrefix: (instance, args) =>
-    {
-        // Returning 'false' entirely halts the execution of the original game code
-        return false; 
-    }
-);
-
-// PATTERN 7: Explicit Type Overloads
-// Best for: Targeting static classes, internal methods, or third-party code where generic constraints don't fit.
-IHook staticHook = HookFactory.Create(
-    typeof(FactionGiftUtility),
-    "GiveGiftResult",
-    onPrefix: null,
-    onPostfix: (object instance, object[] args, ref object result) => 
-    {
-        // Custom static patch logic goes here
-    }
-);
-
-```
-
----
-
-### 3. State-Driven Patch Processing (`DynamicPatchProcessor`)
-
-For when your TPS (Ticks Per Second) is dropping faster than the colony's mood during a toxic fallout. Instead of hammering expensive `Harmony.Patch()` and `Harmony.Unpatch()` operations inside active update tick loops, the `DynamicPatchProcessor` caches instructions and executes mutations exclusively when state boundary changes are crossed.
-
-#### Real-World Implementation: Third-Party Mod Minimap Optimizer
-
-```csharp
-public struct MiniMapContext
-{
-    public bool IsOpen;
-    public bool MapChanged;
-    public bool JustLoaded;
-}
-
-public static class DubsPatchController
-{
-    private static DynamicPatchProcessor<MiniMapContext> _optimizer;
-
-    public static void Initialize(Harmony harmony)
-    {
-        var tryUpdate = AccessTools.Method(typeof(Section), "TryUpdate");
-        var dubsPrefix = AccessTools.Method("DubsMintMinimap.Harmony_TryUpdate:Prefix");
-
-        _optimizer = new DynamicPatchProcessor<MiniMapContext>(
-            harmony,
-            tryUpdate,
-            dubsPrefix,
-            context =>
-            {
-                // The Pure Functional Reduction Layer: Returns desired layout states safely
-                if (context.MapChanged || context.JustLoaded)
-                    return PatchCommand.Enable;
-
-                return context.IsOpen
-                    ? PatchCommand.Enable
-                    : PatchCommand.Disable;
-            }
-        );
-    }
-
-    public static void LogStateUpdate(MiniMapContext currentContext)
-    {
-        // Internal caching mechanisms evaluate commands automatically. 
-        // If the map state hasn't visually transitioned, this call exits immediately as a NoOp.
-        _optimizer.Update(currentContext);
-    }
-}
-
-```
-
----
-
-### 4. The Omniscient Message Bus
+### 2. The Omniscient Message Bus
 
 Keep your mod components more separated than a jealous pawn and their rival. Decouple your systems entirely using a high-performance publish-subscribe pattern. By shifting dependencies out of hard class links, you eliminate cross-mod load dependency loops.
 
 #### Lane A: The Typed Lane (Internal & Performance Critical)
 
-The Typed Lane is compile-time safe and handles data casting natively without boxing value types. This is the optimal route for broadcasting rapidly recurring gameplay events across systems inside your mod, moving faster than a deathcore blast beat.
+The Typed Lane is compile-time safe and handles data casting natively without boxing value types. This is the optimal route for broadcasting rapidly recurring gameplay events across systems inside your mod, moving faster than a technical metal drum solo.
 
 ```csharp
+namespace MyEconomyMod
+{
+    // A single, coherent module log definition used throughout our namespace
+    internal static class ModLog
+    {
+        public static readonly DivineLog Instance = new DivineLog("MyEconomyMod", "#00FF88", true);
+    }
+}
+
 // 1. Define an immutable, behavior-less data payload structure
 public struct TradeCompletedMessage
 {
@@ -258,7 +113,7 @@ public class EconomyTracker : GameComponent
     private void RecordTrade(TradeCompletedMessage msg)
     {
         TotalSilverTraded += Math.Abs(msg.SilverExchanged);
-        DivineLog.Debug($"Lifetime economy footprint updated: {TotalSilverTraded} silver.");
+        MyEconomyMod.ModLog.Instance.Debug($"Lifetime footprint updated: {TotalSilverTraded} silver.");
     }
 
     public void Teardown()
@@ -278,21 +133,28 @@ The Loose Lane operates via raw magic-string channel identifiers. This allows Mo
 // ==========================================
 // PUBLISHER CONTEXT (Mod A - Independent Project)
 // ==========================================
+private static readonly DivineLog LogA = new DivineLog("ModA_Publisher", "cyan");
+
 int silverValue = 500;
-// Dispatches an standard 'object' package out over the global string wire
 MessageBus.Publish("ModA_FactionSilverCount", silverValue);
+LogA.Debug("Dispatched balance payload update across Loose Lane.");
 
 // ==========================================
 // SUBSCRIBER CONTEXT (Mod B - External Addon)
 // ==========================================
-MessageBus.Subscribe("ModA_FactionSilverCount", (payload) =>
+private static readonly DivineLog LogB = new DivineLog("ModB_Subscriber", "orange");
+
+public static void RegisterListener()
 {
-    // Mandatory runtime validation check & unboxing pattern matching
-    if (payload is int silverCount)
+    MessageBus.Subscribe("ModA_FactionSilverCount", (payload) =>
     {
-        DivineLog.Info($"Cross-Mod Captured! Mod A reported balance: {silverCount}");
-    }
-});
+        // Mandatory runtime validation check & unboxing pattern matching
+        if (payload is int silverCount)
+        {
+            LogB.Info($"Cross-Mod Captured! Mod A reported balance: {silverCount}");
+        }
+    });
+}
 
 ```
 
