@@ -1,28 +1,52 @@
-# Divine Intervention
+# [DI-CORE: SYSTEMS ARCHITECTURE MANUAL]
 
-**The Architecture of Sovereignty for RimWorld Modding** *Make Mods the Right Way™ (Because Randy Knows You Haven't Been)*
-
-> ⚠️ IMPORTANT: This framework is brand new and is largely untested. THERE IS CURRENTLY NO OFFICIAL BUILD. If you find a build of this on the Steam Workshop or elsewhere, it is a rogue clone so treat it with the same suspicion as a crashlanded transport pod full of toxic waste packs.
-> ⚠️ IMPORTANT: Currently all naming including the namespaces and namespace hierarchy, class names, PackageIDs and more are subject to change before the first official release. Don't get attached.
-
----
-
-Welcome to **Divine Intervention**, a high-performance, developer-friendly C# framework for RimWorld. This library provides a foundation of decoupled, performant, and heavily documented core utilities, allowing you to focus on building features rather than fighting the engine (and the urge to harvest your pawns' organs).
-
-* The core framework code is heavily commented for much faster understanding.
-* Extensive, fully compiling example usage for all features can be found in the Examples folder.
+**PROTOCOL ID:** DI-FRAMEWORK-01  
+**CODENAME:** Divine Intervention Core  
+**SYSTEM STATUS:** UNSTABLE / PRE-RELEASE TESTING  
+**MAINTAINER:** K. GIVLER (ADMIN)  
 
 ---
 
-## 🛠️ Core Features
+## 1.0 SYSTEM OVERVIEW
 
-### 1. Production-Safe Contextual Logging (`DivineLog`)
+The **Divine Intervention Core (DI)** framework is a decoupled, high-performance runtime utility library engineered for the C# environment within the *RimWorld* simulation matrix. This framework provides an optimized, thread-safe, and extensively documented foundation layer designed to abstract core systems away from direct engine dependency, mitigating structural layout complications and stabilizing modular extensions.
 
-Console spam is worse than a Psychic Drone (Extreme). Stop cluttering your console with messy strings and manually managed `#if DEBUG` blocks. The `DivineLog` engine supports complete cross-mod isolation while maximizing runtime performance.
+The primary codebase features deep inline developer documentation. Complete, executable usage specifications are maintained in the `/Examples/` directory tree.
 
-* **Zero-Overhead Diagnostics:** `DivineLog.Debug()` utilizes the `[Conditional("DEBUG")]` attribute to ensure debug traces are completely stripped out of your compiled assembly during production builds. They vanish faster than a stack of components left unroofed.
-* **Pre-Computed Hot Paths:** Unlike traditional logging scripts that format strings on every game tick, updating the `Color` property on an instance recalculates your rich text prefix tags *exactly once* during assignment. Logging calls remain pure, lightning-fast pointer reads.
-* **Architectural Flexibility:** Power users can choose the **DIY Route** to completely manage reference lifetimes explicitly, while developers looking for fast, global file access can use the **Managed Registry** to pool instances cleanly without allocations.
+```text
+================================================================================
+                                ⚠️ SYSTEM ALERTS
+================================================================================
+[ALERT 01] PHASE ZERO DEVELOPMENT: This codebase is unverified and completely 
+           untested. No official system binaries have been compiled or certified 
+           for public deployment. Treat unverified distribution channels as 
+           corrupted, volatile memory blocks.
+[ALERT 02] MUTABLE IDENTIFIERS: All namespaces, class naming structures, and 
+           PackageIDs are fluid and subject to structural mutation prior to 
+           baseline version finalization. Do not develop long-term dependencies 
+           on the current API layout.
+================================================================================
+
+```
+
+---
+
+## 2.0 INTEGRATED DIAGNOSTIC SUBSYSTEM (`DivineLog`)
+
+The `DivineLog` system replaces legacy, high-allocation logging scripts that introduce serialization latency during active execution ticks. It implements strict cross-mod context isolation while eliminating output string processing bottlenecks.
+
+### 2.1 Performance Characteristics
+
+* **Zero-Overhead Compilation:** The `DivineLog.Debug()` pipeline is wrapped in the `[Conditional("DEBUG")]` preprocessor attribute. Diagnostic traces are completely excised from production binaries during release compilation cycles, minimizing assembly size and instruction overhead.
+* **Static Execution Paths:** Traditional rich-text styling forces string manipulation routines on every execution pass. The `DivineLog` architecture calculates text prefix tags precisely once during the initialization or reassignment of the `Color` property, converting runtime log evaluations into pure pointer read operations.
+* **Memory Allocation Matrix:** Developers may choose between two lifecycle strategies based on target resource budgets:
+
+| Operational Strategy | Memory Footprint | Reference Management | Best Application |
+| --- | --- | --- | --- |
+| **Managed Registry** | Shared / Pooled Allocations | Internally cached via unique string prefixes | Rapid global file access with zero reference passing. |
+| **DIY Configuration** | Isolated Static Instance | Explicit manual reference lifecycle tracking | Single-allocation lifecycle bounds linked to mod entry entry points. |
+
+### 2.2 Subsystem Implementation Guide
 
 ```csharp
 // APPROACH 1: THE MANAGED REGISTRY (Zero Reference Passing)
@@ -49,19 +73,19 @@ CustomLog.Info("Context changed: Processing sensitive XML payload files...");
 CustomLog.Color = "red"; // Switch to text-defined literal red
 CustomLog.Info("Emergency context: Operation timed out.");
 
-CustomLog.Color = "#66CCFF"; // Return safely to baseline profile with zero cross-mod configuration leak
+CustomLog.Color = "#666CCFF"; // Return safely to baseline profile with zero cross-mod configuration leak
 
 ```
 
 ---
 
-### 2. The Omniscient Message Bus
+## 3.0 INTER-PROCESS COMMUNICATION NETWORK (THE MESSAGE BUS)
 
-Keep your mod components more separated than a jealous pawn and their rival. Decouple your systems entirely using a high-performance publish-subscribe pattern. By shifting dependencies out of hard class links, you eliminate cross-mod load dependency loops.
+To prevent severe class-linking dependency loops and decoupling failures between discrete software modules, the framework utilizes an asynchronous publish-subscribe message bus architecture split into two targeted transport channels.
 
-#### Lane A: The Typed Lane (Internal & Performance Critical)
+### 3.1 Lane A: The Strongly-Typed Pipeline
 
-The Typed Lane is compile-time safe and handles data casting natively without boxing value types. This is the optimal route for broadcasting rapidly recurring gameplay events across systems inside your mod, moving faster than a technical metal drum solo.
+Designed for high-frequency internal data transit. This pipeline bypasses runtime object boxing for value types and remains compile-time safe. It is the designated path for continuous, rapid-fire gameplay event broadcasting.
 
 ```csharp
 namespace MyEconomyMod
@@ -125,23 +149,23 @@ public class EconomyTracker : GameComponent
 
 ```
 
-#### Lane B: The Loose Lane (Cross-Mod Extension Network)
+### 3.2 Lane B: The Loose-String Integration Network
 
-The Loose Lane operates via raw magic-string channel identifiers. This allows Mod A to communicate with Mod B even if neither developer has access to the other’s source code. It's like trading with a bulk goods orbital ship using walkie-talkies.
+Designed for multi-assembly cross-mod bridging where source files cannot be shared. Communication routes are established via magic-string channel tokens.
 
 ```csharp
-// ==========================================
+// =============================================================================
 // PUBLISHER CONTEXT (Mod A - Independent Project)
-// ==========================================
+// =============================================================================
 private static readonly DivineLog LogA = new DivineLog("ModA_Publisher", "cyan");
 
 int silverValue = 500;
 MessageBus.Publish("ModA_FactionSilverCount", silverValue);
 LogA.Debug("Dispatched balance payload update across Loose Lane.");
 
-// ==========================================
+// =============================================================================
 // SUBSCRIBER CONTEXT (Mod B - External Addon)
-// ==========================================
+// =============================================================================
 private static readonly DivineLog LogB = new DivineLog("ModB_Subscriber", "orange");
 
 public static void RegisterListener()
@@ -160,17 +184,17 @@ public static void RegisterListener()
 
 ---
 
-## 🏗️ Quick Start Integration
+## 4.0 DEPLOYMENT & LINKING PROCEDURES
 
-To enable global inter-mod communication via the shared memory network, you must utilize the **Divine Intervention Core** assembly deployment structure. Do not skip these steps, or your mod will throw more red errors than a manhunting boomalope pack.
+To establish valid data linking across the shared simulation memory plane, compiling assemblies must adhere strictly to the following linking configuration protocol.
 
-1. **Subscribe:** Add a dependency reference to the **Divine Intervention Core** mod framework inside your mod distribution profile.
-2. **Reference:** Link `DivineIntervention.dll` into your local IDE project solution workspace dependencies.
-3. **Set Copy Local to False:** Inside your project assembly reference compilation properties settings panel, explicitly set **Copy Local** (`Private` metadata flag) to `False`.
+1. **Dependency Assignment:** Register a hard dependency pointing to the `Divine Intervention Core` mod distribution profile in the target mod configuration layout.
+2. **Assembly Reference:** Map `DivineIntervention.dll` into the local IDE project workspace reference index.
+3. **Compilation Reference Override:** Within the properties panel of the local project assembly reference, the **Copy Local** (`Private` metadata flag) property **MUST BE EXPLICITLY SET TO `FALSE**`.
 
-> **CRITICAL:** Skipping this step forces your compilation build setup to package local instances. This breaks isolated system memory linking, drops global messaging operations, and practically guarantees Randy will drop a meteorite on your colony's hospital.
+> **CRITICAL ARCHITECTURAL REQUIREMENT:** Failure to isolate assembly packaging by leaving Copy Local set to True results in localized instantiation loops. This breaks memory isolation bounds, halts inter-assembly message bus communications, and induces unpredictable state exceptions within the active runtime engine.
 
-4. **Add Dependency Tag:** Edit your mod's `About/About.xml` file definition schema layout directory tree to enforce loading sequences explicitly:
+4. **Schema Structuring:** Inject the tracking configuration schema directly into the project's `/About/About.xml` metadata definition file:
 
 ```xml
 <modDependencies>
@@ -184,4 +208,12 @@ To enable global inter-mod communication via the shared memory network, you must
 
 ---
 
-*Copyright (c) 2026 Kyle Givler. Licensed under the MIT License (And definitely not made of human leather).*
+## 5.0 LEGAL & COMPLIANCE
+
+**COPYRIGHT NOTICE:** © 2026 KYLE GIVLER.
+
+**DISTRIBUTION:** This software architecture specification and its associated binaries are distributed under the strict guidelines of the MIT Open Source License agreement. The maintainer guarantees no structural stability regarding localized organic asset tracking or colony simulation anomalies caused by runtime script deviations.
+
+---
+
+**[DI-CORE: SYSTEMS ARCHITECTURE MANUAL]**
